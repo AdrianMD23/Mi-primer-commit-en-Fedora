@@ -1,57 +1,111 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Inertia\Inertia;
 use App\Models\Venta;
-use App\Models\DetalleVenta;
+use App\Models\Producto;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class VentaController extends Controller
 {
-    // 1. Muestra la pantalla de la caja registradora
     public function create()
     {
-        return Inertia::render('Ventas/NuevaVenta');
+        // Mandamos a React solo los productos que SÍ tienen stock
+        $productos = Producto::where('stock', '>', 0)
+            ->select('id', 'clave', 'nombre', 'precio_venta', 'stock', 'talla', 'peso_gramos')
+            ->orderBy('nombre')
+            ->get();
+
+        return Inertia::render('Ventas/Nueva', [
+            'productos' => $productos
+        ]);
     }
-    
-    // 2. Procesa la venta y la guarda en la base de datos
+
     public function store(Request $request)
     {
-        // Iniciamos una transacción: o se guarda todo o nada (Seguridad de datos)
-        DB::transaction(function () use ($request) {
-            $venta = Venta::create([
-                'user_id' => auth()->id(),
-                'total' => $request->total,
-                'status' => 'pendiente', // Pendiente para que el Gerente la cierre
-            ]);
+        // 1. Validación estricta
+        $request->validate([
+            'carrito' => 'required|array|min:1',
+            'metodo_pago' => 'required|string',
+            'total' => 'required|numeric|min:0.1'
+        ]);
 
-            foreach ($request->items as $item) {
-                $venta->detalles()->create([
-                    'clave' => $item['clave'],
-                    'nombre' => $item['nombre'],
-                    'cantidad' => $item['cantidad'],
-                    'precio_unitario' => $item['precio'],
-                    'subtotal' => $item['precio'] * $item['cantidad'],
+        try {
+            DB::transaction(function () use ($request) {
+                // 2. Crear la venta (Asegúrate que id_usuario y metodo_pago existan en tu tabla SQL)
+                $venta = Venta::create([
+                    'total' => $request->total,
+                    'metodo_pago' => $request->metodo_pago,
+                    'id_usuario' => auth()->id(),
                 ]);
-            }
-        });
 
-        return redirect()->route('dashboard')->with('message', 'Nota enviada a corte correctamente');
+                // 3. Registrar productos y descontar stock
+                foreach ($request->carrito as $item) {
+                    DB::table('detalle_ventas')->insert([
+                        'id_venta' => $venta->id,
+                        'id_producto' => $item['id'],
+                        'cantidad' => $item['cantidad'],
+                        'precio_unitario' => $item['precio_venta'],
+                        'subtotal' => $item['cantidad'] * $item['precio_venta'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    Producto::where('id', $item['id'])->decrement('stock', $item['cantidad']);
+                }
+            });
+
+            return redirect()->route('ventas.historial')->with('success', '¡Venta registrada con éxito!');
+
+        } catch (\Exception $e) {
+            // Si algo falla, regresamos con el error para que sepas qué pasó
+            return back()->withErrors(['error' => 'Error al guardar: ' . $e->getMessage()]);
+        }
+    
+        // Redirigimos al catálogo con mensaje de éxito (o al historial de ventas)
+        return redirect()->route('catalogo.index')->with('success', '¡Venta registrada exitosamente!');
     }
-
-    // 3. Muestra la pantalla del historial (Mis Ventas)
+    
+    // Historial de ventas del usuario actual
     public function historial()
     {
-        // Datos simulados (Por ahora, para maquetar la tabla de Marco)
-        $ventasSimuladas = [
-            ['id' => 1, 'folio' => 'TKT-0001', 'fecha' => '2026-03-26 10:30 AM', 'cliente' => 'Público General', 'total' => 850.00, 'articulos' => 1],
-            ['id' => 2, 'folio' => 'TKT-0002', 'fecha' => '2026-03-26 12:15 PM', 'cliente' => 'Doña Rosa', 'total' => 2400.00, 'articulos' => 2],
-            ['id' => 3, 'folio' => 'TKT-0003', 'fecha' => '2026-03-26 01:45 PM', 'cliente' => 'Público General', 'total' => 600.00, 'articulos' => 1],
-        ];
+        // Traemos las ventas de este vendedor junto con los detalles y los productos
+        $ventas = Venta::with('detalles.producto')
+            ->where('id_usuario', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
         return Inertia::render('Ventas/Historial', [
-            'ventas' => $ventasSimuladas
+            'ventas' => $ventas
+        ]);
+    }
+
+    // Resumen del turno actual para el vendedor
+    public function miTurno()
+    {
+        $hoy = now()->format('Y-m-d');
+        
+        // Buscamos solo las ventas de hoy de este vendedor
+        $ventasHoy = Venta::where('id_usuario', auth()->id())
+            ->whereDate('created_at', $hoy)
+            ->get();
+
+        // Calculamos cuánto cobró con cada método
+        $totalEfectivo = $ventasHoy->where('metodo_pago', 'Efectivo')->sum('total');
+        $totalTarjeta = $ventasHoy->where('metodo_pago', 'Tarjeta de Crédito')->sum('total');
+        $totalTransferencia = $ventasHoy->where('metodo_pago', 'Transferencia')->sum('total');
+
+        return Inertia::render('Ventas/MiTurno', [
+            'resumen' => [
+                'efectivo' => $totalEfectivo,
+                'tarjeta' => $totalTarjeta,
+                'transferencia' => $totalTransferencia,
+                'total' => $ventasHoy->sum('total'),
+                'cantidad_ventas' => $ventasHoy->count()
+            ],
+            'fecha' => now()->translatedFormat('d \d\e F \d\e Y')
         ]);
     }
 }

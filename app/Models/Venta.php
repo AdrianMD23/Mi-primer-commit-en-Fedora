@@ -5,9 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Venta extends Model {
-    protected $fillable = ['user_id', 'total', 'status'];
+    // Los nombres deben ser EXACTAMENTE iguales a los de tu base de datos y controlador
+    protected $fillable = ['id_usuario', 'total', 'metodo_pago'];
 
     public function detalles() {
-        return $this->hasMany(DetalleVenta::class);
+        return $this->hasMany(DetalleVenta::class, 'id_venta');
+    }
+
+    public function usuario() {
+        return $this->belongsTo(User::class, 'id_usuario');
     }
 }

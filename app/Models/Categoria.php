@@ -10,7 +10,7 @@ class Categoria extends Model
     use HasFactory;
 
     // Campos que permitimos guardar masivamente
-    protected $fillable = ['nombre'];
+    protected $fillable = ['nombre', 'activo'];
 
     // Relación: Una categoría tiene muchos productos (1 a N)
     public function productos()

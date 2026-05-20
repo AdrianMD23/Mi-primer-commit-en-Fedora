@@ -1,11 +1,6 @@
 import { useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import Checkbox from '@/Components/Checkbox';
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -26,90 +21,117 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        // Contenedor principal: Velvet (#4a0e2e)
-        <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0" style={{ backgroundColor: '#4a0e2e' }}>
-            
+        // FONDO: Profundidad absoluta con el color VOID
+        <div className="min-h-screen flex flex-col justify-center items-center bg-[#0E0B16] relative overflow-hidden px-4">
             <Head title="Bienvenido" />
 
-            {/* Tarjeta de Login: Bone (#e8dcc8) */}
-            <div className="w-full sm:max-w-md mt-6 px-8 py-10 shadow-2xl overflow-hidden sm:rounded-2xl" style={{ backgroundColor: '#e8dcc8' }}>
+            {/* LUCES DE FONDO MÁGICAS (Fuschia y Jewel mezclándose en el fondo) */}
+            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#A239CA] opacity-20 rounded-full blur-[100px] pointer-events-none"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#4717F6] opacity-20 rounded-full blur-[100px] pointer-events-none"></div>
+
+            {status && <div className="mb-4 font-bold text-sm text-green-400 z-10">{status}</div>}
+
+            {/* CONTENEDOR PRINCIPAL: Tarjeta color STARK */}
+            <div className="bg-[#E7DFDD] rounded-[2rem] shadow-[0_20px_50px_-10px_rgba(71,23,246,0.15)] p-2 relative z-10 w-full max-w-md transition-all duration-500 hover:shadow-[0_20px_50px_-10px_rgba(162,57,202,0.2)]">
                 
-                <div className="text-center mb-8">
-                    <h2 className="text-3xl font-serif italic" style={{ color: '#4a0e2e' }}>Bienvenido</h2>
-                    <p className="text-xs tracking-widest uppercase font-bold mt-1" style={{ color: '#4a0e2e', opacity: 0.7 }}>
-                        Sistema de Gestión
-                    </p>
-                </div>
+                {/* MARCO INTERNO */}
+                <div className="border border-[#0E0B16]/10 rounded-[1.5rem] p-8 sm:p-10 bg-white/40 backdrop-blur-sm">
 
-                {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
-
-                <form onSubmit={submit} className="space-y-6">
-                    <div>
-                        <InputLabel htmlFor="username" value="Nombre de Usuario" style={{ color: '#4a0e2e' }} />
-                        <TextInput
-                            id="username"
-                            type="text"
-                            name="username"
-                            value={data.username}
-                            className="mt-1 block w-full border-none shadow-inner bg-white/50 focus:ring-2 focus:ring-[#4a0e2e]"
-                            autoComplete="username"
-                            isFocused={true}
-                            onChange={(e) => setData('username', e.target.value)}
-                        />
-                        <InputError message={errors.username} className="mt-2" />
+                    {/* ENCABEZADO */}
+                    <div className="text-center mb-10">
+                        <h2 className="text-4xl font-serif italic text-[#0E0B16] mb-1">Bienvenido</h2>
+                        <p className="text-[9px] tracking-[0.3em] uppercase font-black text-[#0E0B16]/50">
+                            Sistema de Gestión
+                        </p>
+                        {/* Ícono de destello usando el color FUSCHIA */}
+                        <div className="mt-4 flex justify-center">
+                            <span className="text-2xl text-[#A239CA] opacity-60">✧</span>
+                        </div>
                     </div>
 
-                    <div>
-                        <InputLabel htmlFor="password" value="Contraseña" style={{ color: '#4a0e2e' }} />
-                        <TextInput
-                            id="password"
-                            type="password"
-                            name="password"
-                            value={data.password}
-                            className="mt-1 block w-full border-none shadow-inner bg-white/50 focus:ring-2 focus:ring-[#4a0e2e]"
-                            autoComplete="current-password"
-                            onChange={(e) => setData('password', e.target.value)}
-                        />
-                        <InputError message={errors.password} className="mt-2" />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <label className="flex items-center">
-                            <Checkbox
-                                name="remember"
-                                checked={data.remember}
-                                onChange={(e) => setData('remember', e.target.checked)}
-                                style={{ color: '#4a0e2e' }}
-                            />
-                            <span className="ms-2 text-xs font-bold uppercase tracking-tighter" style={{ color: '#4a0e2e' }}>Recuérdame</span>
-                        </label>
+                    {/* FORMULARIO */}
+                    <form onSubmit={submit} className="space-y-6">
                         
-                        {canResetPassword && (
-                            <Link
-                                href={route('password.request')}
-                                className="text-xs hover:underline"
-                                style={{ color: '#4a0e2e', opacity: 0.6 }}
-                            >
-                                ¿Olvidaste tu contraseña?
-                            </Link>
-                        )}
-                    </div>
+                        {/* INPUT USUARIO */}
+                        <div>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-[#0E0B16]/80 mb-2">
+                                Nombre de Usuario
+                            </label>
+                            <input
+                                id="username"
+                                type="text"
+                                name="username"
+                                value={data.username}
+                                className="w-full bg-transparent border-0 border-b-2 border-[#0E0B16]/10 focus:border-[#4717F6] focus:ring-0 px-2 py-2 text-[#0E0B16] placeholder-[#0E0B16]/30 font-bold transition-colors text-sm"
+                                placeholder="Ingresa tu usuario"
+                                autoComplete="username"
+                                autoFocus
+                                onChange={(e) => setData('username', e.target.value)}
+                            />
+                            <InputError message={errors.username} className="mt-2" />
+                        </div>
 
-                    <div className="pt-4">
-                        <button
-                            className="w-full py-3 rounded-full font-bold text-xs uppercase tracking-widest transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg"
-                            style={{ backgroundColor: '#4a0e2e', color: '#e8dcc8' }}
-                            disabled={processing}
-                        >
-                            Entrar al Sistema
-                        </button>
-                    </div>
-                </form>
+                        {/* INPUT CONTRASEÑA */}
+                        <div>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-[#0E0B16]/80 mb-2">
+                                Contraseña
+                            </label>
+                            <input
+                                id="password"
+                                type="password"
+                                name="password"
+                                value={data.password}
+                                className="w-full bg-transparent border-0 border-b-2 border-[#0E0B16]/10 focus:border-[#4717F6] focus:ring-0 px-2 py-2 text-[#0E0B16] placeholder-[#0E0B16]/30 font-bold transition-colors text-sm"
+                                placeholder="••••••••"
+                                autoComplete="current-password"
+                                onChange={(e) => setData('password', e.target.value)}
+                            />
+                            <InputError message={errors.password} className="mt-2" />
+                        </div>
+
+                        {/* RECUÉRDAME Y OLVIDÉ CONTRASEÑA */}
+                        <div className="flex items-center justify-between pt-2">
+                            <label className="flex items-center cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    name="remember"
+                                    checked={data.remember}
+                                    onChange={(e) => setData('remember', e.target.checked)}
+                                    // El checkbox se pinta de JEWEL al seleccionarse
+                                    className="rounded border-[#0E0B16]/20 text-[#4717F6] shadow-sm focus:ring-[#4717F6] bg-transparent transition-colors"
+                                />
+                                <span className="ml-2 text-[10px] font-bold text-[#0E0B16]/60 uppercase tracking-wider group-hover:text-[#4717F6] transition-colors">
+                                    Recuérdame
+                                </span>
+                            </label>
+
+                            {canResetPassword && (
+                                <Link
+                                    href={route('password.request')}
+                                    // Al pasar el mouse, brilla en FUSCHIA
+                                    className="text-[10px] font-bold text-[#0E0B16]/50 hover:text-[#A239CA] underline tracking-wider transition-colors"
+                                >
+                                    ¿Olvidaste tu contraseña?
+                                </Link>
+                            )}
+                        </div>
+
+                        {/* BOTÓN DE ENTRADA (Degradado Jewel -> Fuschia) */}
+                        <div className="pt-6">
+                            <button
+                                disabled={processing}
+                                className="w-full bg-gradient-to-r from-[#4717F6] to-[#A239CA] text-[#E7DFDD] py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-[0_10px_20px_-10px_rgba(162,57,202,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(71,23,246,0.7)] hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
+                            >
+                                {processing ? 'Autenticando...' : 'Entrar al Sistema'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            {/* Footer */}
-            <div className="mt-8 text-center">
-                <p className="text-[10px] tracking-[0.3em] font-bold uppercase" style={{ color: '#e8dcc8' }}>
+            {/* TEXTO INFERIOR */}
+            <div className="absolute bottom-8 w-full text-center z-10 pointer-events-none">
+                <p className="text-[#E7DFDD]/40 text-[10px] font-bold tracking-[0.4em] uppercase">
                     Orgullosamente Artesanal
                 </p>
             </div>
