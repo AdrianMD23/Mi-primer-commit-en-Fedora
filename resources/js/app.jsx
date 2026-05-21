@@ -15,8 +15,14 @@ createInertiaApp({
             import.meta.glob('./Pages/**/*.jsx'),
         ),
     setup({ el, App, props }) {
-        const root = createRoot(el);
+        // --- LÓGICA DE PERSISTENCIA DEL TEMA ---
+        // Esto verifica el color antes de renderizar para evitar "flashes" blancos
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
 
+        const root = createRoot(el);
         root.render(<App {...props} />);
     },
     progress: {

@@ -39,7 +39,7 @@ export default function Dashboard({ stockAlerts }) {
             { title: 'Mi Turno', description: 'Resumen de tu efectivo cobrado hoy.', href: '/ventas/mi-corte', buttonText: 'Ver Mi Caja', icon: '💵' },
         ]
     };
-
+    
     const widgets = roleWidgets[userRole] || roleWidgets['Vendedor'];
 
     return (

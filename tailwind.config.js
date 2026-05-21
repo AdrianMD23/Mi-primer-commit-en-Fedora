@@ -25,4 +25,17 @@ export default {
     },
 
     plugins: [forms],
+
+    theme: {
+        extend: {
+            colors: {
+                void: 'var(--color-void)',
+                fuschia: 'var(--color-fuschia)',
+                jewel: 'var(--color-jewel)',
+                stark: 'var(--color-stark)',
+            }
+        },
+    },
+    plugins: [require('@tailwindcss/forms')],
+
 };

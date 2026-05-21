@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import ThemeToggle from '@/Components/ThemeToggle';
 
 export default function Authenticated({ user, header, children }) {
     const userName = user?.name || 'Usuario';
@@ -12,6 +13,10 @@ export default function Authenticated({ user, header, children }) {
             <nav className="p-4 shadow-[0_10px_30px_-15px_rgba(162,57,202,0.3)] bg-void/90 backdrop-blur-md border-b border-fuschia/20 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     
+                    <div className="flex items-center gap-4">
+    <ThemeToggle /> {/* Aquí aparecerá el botón */}
+    {/* ... resto de tu menú ... */}
+</div>
                     {/* LOGO */}
                     <div className="flex items-center">
                         <Link href="/dashboard" className="text-2xl font-serif italic transition-all duration-300 hover:text-fuschia hover:drop-shadow-[0_0_10px_rgba(162,57,202,0.8)] text-stark">
