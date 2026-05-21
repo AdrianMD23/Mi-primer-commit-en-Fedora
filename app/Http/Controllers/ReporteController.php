@@ -85,4 +85,34 @@ public function index()
     // 3. Descargamos el archivo
     return $pdf->download('Reporte_Semanal_Plateria.pdf');
 }
+public function descargarVentasHoyPDF()
+    {
+        $hoy = now()->format('Y-m-d');
+        
+        // Obtenemos todas las ventas del día ordenadas por folio
+        // Usamos 'with' para traer los productos vendidos y el usuario que vendió
+        $ventas = Venta::whereDate('created_at', $hoy)
+            ->with(['detalles.producto', 'usuario'])
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $totalDia = $ventas->sum('total');
+        $efectivo = $ventas->where('metodo_pago', 'Efectivo')->sum('total');
+        $tarjeta = $ventas->where('metodo_pago', 'Tarjeta')->sum('total');
+        $transferencia = $ventas->where('metodo_pago', 'Transferencia')->sum('total');
+
+        $data = [
+            'ventas' => $ventas,
+            'fecha' => now()->translatedFormat('l d \d\e F \d\e Y'),
+            'total_general' => $totalDia,
+            'efectivo' => $efectivo,
+            'tarjeta' => $tarjeta,
+            'transferencia' => $transferencia
+        ];
+
+        // Cargamos la vista HTML (que crearemos en el paso 4)
+        $pdf = Pdf::loadView('pdf.ventas_diarias', $data);
+        
+        return $pdf->download("reporte_ventas_{$hoy}.pdf");
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
 
@@ -21,13 +21,20 @@ export default function NuevaVenta({ auth, productos }) {
         const productoEncontrado = productos.find(p => p.clave.toUpperCase() === codigo.toUpperCase());
 
         if (productoEncontrado) {
-            agregarAlCarrito(productoEncontrado);
-            setCodigo('');
-            setErrorMsg('');
+            // Evaluamos si el producto existe PERO su stock es 0 (o menor)
+            if (productoEncontrado.stock <= 0) {
+                setErrorMsg(`⚠️ PRODUCTO AGOTADO: "${productoEncontrado.nombre}"`);
+                setTimeout(() => setErrorMsg(''), 4000); // Lo dejamos 4 segs para que lo lean
+            } else {
+                agregarAlCarrito(productoEncontrado);
+                setCodigo('');
+                setErrorMsg('');
+            }
         } else {
-            setErrorMsg(`No se encontró: "${codigo.toUpperCase()}"`);
+            setErrorMsg(`No se encontró la clave: "${codigo.toUpperCase()}"`);
             setTimeout(() => setErrorMsg(''), 3000);
         }
+        
         if (inputRef.current) inputRef.current.focus();
     };
 
@@ -45,35 +52,56 @@ export default function NuevaVenta({ auth, productos }) {
         });
     };
 
-    const cambiarCantidad = (id, nueva) => {
+   const cambiarCantidad = (id, nueva) => {
+        // 1. Si presionan el botón "-" hasta llegar a 0, lo quitamos del carrito
         if (nueva < 1) return setCarrito(prev => prev.filter(i => i.id !== id));
-        setCarrito(prev => prev.map(i => i.id === id ? { ...i, cantidad: nueva } : i));
+
+        // 2. Si quieren aumentar, verificamos el stock antes de actualizar
+        setCarrito(prev => prev.map(item => {
+            if (item.id === id) {
+                // EL CANDADO: Si el nuevo número supera el stock real...
+                if (nueva > item.stock) {
+                    setErrorMsg(`⚠️ LÍMITE ALCANZADO: Solo quedan ${item.stock} unidades de ${item.nombre}`);
+                    setTimeout(() => setErrorMsg(''), 3000); // Mostramos la alerta neón por 3 segundos
+                    return item; // Cancelamos el aumento y lo dejamos con el número que ya tenía
+                }
+                
+                // Si todo está bien, actualizamos la cantidad
+                return { ...item, cantidad: nueva };
+            }
+            return item;
+        }));
     };
 
     const totalCarrito = useMemo(() => {
         return carrito.reduce((acc, item) => acc + (item.precio_venta * item.cantidad), 0);
     }, [carrito]);
 
-    const procesarCobro = (e) => {
+    // --- NUEVO: Sincroniza el carrito de React con el formulario de Inertia automáticamente ---
+    useEffect(() => {
+        setData(prev => ({
+            ...prev,
+            carrito: carrito,
+            total: totalCarrito
+        }));
+    }, [carrito, totalCarrito]);
+
+   const procesarCobro = (e) => {
         e.preventDefault();
         
-        // Verificación de seguridad antes de intentar enviar
         if (carrito.length === 0 || processing) return;
 
-        // Usamos post de Inertia pero pasamos los datos actualizados del carrito y total
         post(route('ventas.store'), {
-            // Forzamos los datos actuales del estado de React
-            onBefore: () => {
-                data.carrito = carrito;
-                data.total = totalCarrito;
-            },
             onSuccess: () => {
                 setCarrito([]);
                 setCodigo('');
+                setErrorMsg('');
             },
-            onError: (err) => {
-                console.error("Error al cobrar:", err);
-                setErrorMsg("Hubo un error al procesar la venta. Revisa los datos.");
+            onError: (errores) => {
+                console.error("Error oculto:", errores);
+                // Aquí atrapamos el error exacto y lo mandamos a la alerta roja
+                const mensajeReal = errores.error || errores.carrito || errores.total || "Error desconocido";
+                setErrorMsg(mensajeReal);
             }
         });
     };

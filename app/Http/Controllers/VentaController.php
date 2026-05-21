@@ -3,77 +3,90 @@
 namespace App\Http\Controllers;
 
 use App\Models\Venta;
-use App\Models\Producto;
+use App\Models\Gasto;
+use App\Models\Producto; // <-- Importante para buscar el stock
+use App\Models\DetalleVenta; // <-- Importante para guardar los tickets
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB; // <-- Para transacciones seguras
 use Inertia\Inertia;
 
 class VentaController extends Controller
 {
+    // ==========================================
+    // 1. CARGA LA PANTALLA DEL PUNTO DE VENTA
+    // ==========================================
     public function create()
     {
-        // Mandamos a React solo los productos que SÍ tienen stock
-        $productos = Producto::where('stock', '>', 0)
-            ->select('id', 'clave', 'nombre', 'precio_venta', 'stock', 'talla', 'peso_gramos')
-            ->orderBy('nombre')
-            ->get();
+        // Le quitamos el where('stock', '>', 0) para que React conozca los agotados
+        $productos = Producto::orderBy('nombre', 'asc')->get();
 
         return Inertia::render('Ventas/Nueva', [
             'productos' => $productos
         ]);
     }
 
+ // ==========================================
+    // 2. PROCESA EL COBRO Y DESCUENTA STOCK
+    // ==========================================
     public function store(Request $request)
     {
-        // 1. Validación estricta
+        // 1. Validamos usando el nombre correcto: "carrito"
         $request->validate([
-            'carrito' => 'required|array|min:1',
+            'total' => 'required|numeric|min:0.1',
             'metodo_pago' => 'required|string',
-            'total' => 'required|numeric|min:0.1'
+            'carrito' => 'required|array', // <--- CORRECCIÓN AQUÍ
         ]);
 
+        \Illuminate\Support\Facades\DB::beginTransaction();
+
         try {
-            DB::transaction(function () use ($request) {
-                // 2. Crear la venta (Asegúrate que id_usuario y metodo_pago existan en tu tabla SQL)
-                $venta = Venta::create([
-                    'total' => $request->total,
-                    'metodo_pago' => $request->metodo_pago,
-                    'id_usuario' => auth()->id(),
+            $venta = Venta::create([
+                'id_usuario' => auth()->id(),
+                'total' => $request->total,
+                'metodo_pago' => $request->metodo_pago,
+            ]);
+
+            // 2. Recorremos el "carrito" en lugar de "articulos"
+            foreach ($request->carrito as $item) { // <--- CORRECCIÓN AQUÍ
+                $producto = Producto::find($item['id']);
+                
+                // --- EL CANDADO MAESTRO ---
+                if ($item['cantidad'] > $producto->stock) {
+                    \Illuminate\Support\Facades\DB::rollBack();
+                    return back()->withErrors(['error' => 'No hay suficiente stock para la pieza: ' . $producto->nombre]);
+                }
+                // ---------------------------
+
+                DetalleVenta::create([
+                    'id_venta' => $venta->id,
+                    'id_producto' => $producto->id,
+                    'cantidad' => $item['cantidad'],
+                    'precio_unitario' => $producto->precio_venta,
+                    'subtotal' => $producto->precio_venta * $item['cantidad'],
                 ]);
 
-                // 3. Registrar productos y descontar stock
-                foreach ($request->carrito as $item) {
-                    DB::table('detalle_ventas')->insert([
-                        'id_venta' => $venta->id,
-                        'id_producto' => $item['id'],
-                        'cantidad' => $item['cantidad'],
-                        'precio_unitario' => $item['precio_venta'],
-                        'subtotal' => $item['cantidad'] * $item['precio_venta'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                $producto->decrement('stock', $item['cantidad']);
+            }
 
-                    Producto::where('id', $item['id'])->decrement('stock', $item['cantidad']);
-                }
-            });
-
-            return redirect()->route('ventas.historial')->with('success', '¡Venta registrada con éxito!');
+            \Illuminate\Support\Facades\DB::commit();
+            return redirect()->route('ventas.historial')->with('success', 'Venta registrada y stock actualizado.');
 
         } catch (\Exception $e) {
-            // Si algo falla, regresamos con el error para que sepas qué pasó
-            return back()->withErrors(['error' => 'Error al guardar: ' . $e->getMessage()]);
+            \Illuminate\Support\Facades\DB::rollBack();
+            // Le decimos que nos mande el error exacto que arroja la base de datos
+            return back()->withErrors(['error' => 'Error en BD: ' . $e->getMessage()]);
         }
-    
-        // Redirigimos al catálogo con mensaje de éxito (o al historial de ventas)
-        return redirect()->route('catalogo.index')->with('success', '¡Venta registrada exitosamente!');
     }
-    
-    // Historial de ventas del usuario actual
+
+    // ==========================================
+    // 3. CARGA EL HISTORIAL (Solo ventas de hoy)
+    // ==========================================
     public function historial()
     {
-        // Traemos las ventas de este vendedor junto con los detalles y los productos
-        $ventas = Venta::with('detalles.producto')
-            ->where('id_usuario', auth()->id())
+        $hoy = now()->format('Y-m-d');
+
+        $ventas = Venta::whereDate('created_at', $hoy)
+            ->with('detalles.producto')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -82,30 +95,31 @@ class VentaController extends Controller
         ]);
     }
 
-    // Resumen del turno actual para el vendedor
+    // ==========================================
+    // 4. CARGA "MI TURNO" (Caja Actual del Día)
+    // ==========================================
     public function miTurno()
     {
         $hoy = now()->format('Y-m-d');
-        
-        // Buscamos solo las ventas de hoy de este vendedor
-        $ventasHoy = Venta::where('id_usuario', auth()->id())
-            ->whereDate('created_at', $hoy)
-            ->get();
 
-        // Calculamos cuánto cobró con cada método
-        $totalEfectivo = $ventasHoy->where('metodo_pago', 'Efectivo')->sum('total');
-        $totalTarjeta = $ventasHoy->where('metodo_pago', 'Tarjeta de Crédito')->sum('total');
-        $totalTransferencia = $ventasHoy->where('metodo_pago', 'Transferencia')->sum('total');
+        $efectivo = Venta::whereDate('created_at', $hoy)->where('metodo_pago', 'Efectivo')->sum('total') ?? 0;
+        $tarjeta = Venta::whereDate('created_at', $hoy)->where('metodo_pago', 'Tarjeta')->sum('total') ?? 0;
+        $transferencia = Venta::whereDate('created_at', $hoy)->where('metodo_pago', 'Transferencia')->sum('total') ?? 0;
+        
+        $gastos = Gasto::whereDate('created_at', $hoy)->sum('monto') ?? 0;
+        $cantidadVentas = Venta::whereDate('created_at', $hoy)->count();
+
+        $efectivoEnCajon = $efectivo - $gastos;
 
         return Inertia::render('Ventas/MiTurno', [
             'resumen' => [
-                'efectivo' => $totalEfectivo,
-                'tarjeta' => $totalTarjeta,
-                'transferencia' => $totalTransferencia,
-                'total' => $ventasHoy->sum('total'),
-                'cantidad_ventas' => $ventasHoy->count()
+                'efectivo' => $efectivoEnCajon > 0 ? $efectivoEnCajon : 0,
+                'tarjeta' => $tarjeta,
+                'transferencia' => $transferencia,
+                'cantidad_ventas' => $cantidadVentas,
+                'total' => $efectivo + $tarjeta + $transferencia
             ],
-            'fecha' => now()->translatedFormat('d \d\e F \d\e Y')
+            'fecha' => now()->translatedFormat('d \d\e F, Y')
         ]);
     }
 }

@@ -21,7 +21,8 @@ export default function InventarioIndex({ auth, productos, categorias, filters }
     // ==========================================
     const [editingProduct, setEditingProduct] = useState(null);
     const { data, setData, post, processing, errors: formErrors, clearErrors } = useForm({
-        clave: '', nombre: '', precio_inv: '', precio_venta: '', categoria_id: '', imagen: null, _method: 'put'
+        clave: '', nombre: '', precio_inv: '', precio_venta: '', categoria_id: '', 
+        stock_minimo: '', stock_maximo: '', imagen: null, _method: 'put'
     });
 
     const abrirEdicion = (prod) => {
@@ -29,11 +30,13 @@ export default function InventarioIndex({ auth, productos, categorias, filters }
         setData({
             clave: prod.clave, nombre: prod.nombre, 
             precio_inv: prod.precio_inv, precio_venta: prod.precio_venta, 
-            categoria_id: prod.categoria_id, imagen: null, _method: 'put'
+            categoria_id: prod.categoria_id, 
+            stock_minimo: prod.stock_minimo || 0, // Cargamos el valor de la BD
+            stock_maximo: prod.stock_maximo || 0, // Cargamos el valor de la BD
+            imagen: null, _method: 'put'
         });
         clearErrors();
     };
-
     const submitEdicion = (e) => {
         e.preventDefault();
         post(route('inventario.update', editingProduct.id), {
@@ -269,7 +272,31 @@ export default function InventarioIndex({ auth, productos, categorias, filters }
                                     <input type="number" step="0.01" value={data.precio_venta} onChange={e => setData('precio_venta', e.target.value)} className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia transition-colors" required />
                                 </div>
                             </div>
-                            
+                            {/* NUEVOS CAMPOS DE STOCK MIN / MAX */}
+                            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-stark/10">
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80 text-yellow-400">⚠️ Alerta Mínima</label>
+                                    <input 
+                                        type="number" min="0" 
+                                        value={data.stock_minimo} 
+                                        onChange={e => setData('stock_minimo', e.target.value)} 
+                                        className="w-full rounded-xl bg-void/50 border border-yellow-500/30 text-stark focus:ring-yellow-500 focus:border-yellow-500 transition-colors" 
+                                        required 
+                                    />
+                                    {formErrors.stock_minimo && <p className="text-fuschia text-xs mt-1 font-bold">{formErrors.stock_minimo}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80 text-emerald-400">📦 Límite Máximo</label>
+                                    <input 
+                                        type="number" min="0" 
+                                        value={data.stock_maximo} 
+                                        onChange={e => setData('stock_maximo', e.target.value)} 
+                                        className="w-full rounded-xl bg-void/50 border border-emerald-500/30 text-stark focus:ring-emerald-500 focus:border-emerald-500 transition-colors" 
+                                        required 
+                                    />
+                                    {formErrors.stock_maximo && <p className="text-fuschia text-xs mt-1 font-bold">{formErrors.stock_maximo}</p>}
+                                </div>
+                            </div>
                             <button disabled={processing} className="w-full mt-6 py-4 bg-gradient-to-r from-jewel to-fuschia text-stark rounded-xl font-black text-sm uppercase tracking-widest shadow-[0_10px_20px_-10px_rgba(71,23,246,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(162,57,202,0.8)] hover:-translate-y-1 transition-all disabled:opacity-50">
                                 {processing ? 'Subiendo...' : 'Guardar Cambios'}
                             </button>

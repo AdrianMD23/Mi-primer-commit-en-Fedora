@@ -16,6 +16,7 @@ use App\Http\Controllers\CorteCajaController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriaController;
+
 use App\Http\Controllers\Admin\ProveedorController; // <-- El import correcto de proveedores
 
 Route::redirect('/', '/login');
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'rol:Vendedor,Administrador'])->group(function () {
     Route::get('/catalogo', [ProductController::class, 'catalogo'])->name('catalogo.index');
 
     // Punto de Venta (POS)
+    Route::get('/ventas/descargar-pdf', [ReporteController::class, 'descargarVentasHoyPDF'])->name('ventas.pdf.hoy');
     Route::get('/ventas/nueva', [VentaController::class, 'create'])->name('ventas.nueva');
     Route::post('/ventas/store', [VentaController::class, 'store'])->name('ventas.store');
     Route::get('/ventas/historial', [VentaController::class, 'historial'])->name('ventas.historial');
@@ -46,7 +48,7 @@ Route::middleware(['auth', 'rol:Gerente,Administrador'])->group(function () {
     // Reportes
     Route::get('/gerencia/reportes', [ReporteController::class, 'index'])->name('gerencia.reportes');
     Route::get('/gerencia/reportes/pdf', [ReporteController::class, 'descargarPDF'])->name('gerencia.reportes.pdf');
- 
+    Route::get('/gerencia/reportes/ventas-hoy', [ReporteController::class, 'descargarVentasHoyPDF'])->name('gerencia.reportes.ventas-hoy');
     // Control de Gastos
     Route::get('/gerencia/gastos', [GastoController::class, 'index'])->name('gerencia.gastos');
     Route::post('/gerencia/gastos', [GastoController::class, 'store'])->name('gerencia.gastos.store');

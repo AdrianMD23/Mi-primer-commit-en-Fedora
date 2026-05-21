@@ -9,13 +9,30 @@ export default function HistorialVentas({ auth, ventas }) {
 
             <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                {/* ENCABEZADO */}
-                <div className="flex justify-between items-end mb-8">
-                    <h2 className="text-4xl font-serif italic text-stark drop-shadow-md">Historial de Ventas</h2>
-                    <Link href="/dashboard" className="text-sm font-bold text-stark/60 hover:text-fuschia transition-colors uppercase tracking-widest">
-                        ← Volver
-                    </Link>
-                </div>
+                {/* --- ENCABEZADO ACTUALIZADO CON EL BOTÓN DE PDF --- */}
+<div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
+    <div>
+        <h2 className="text-4xl font-serif italic text-stark drop-shadow-md">Historial de Ventas</h2>
+        <p className="text-[10px] tracking-widest uppercase font-bold text-stark/50 mt-1">
+            Visualización estricta del turno en curso
+        </p>
+    </div>
+    
+    <div className="flex items-center gap-4 w-full sm:w-auto">
+        {/* BOTÓN NEÓN IMPRIMIR REPORTE PDF */}
+        <a 
+            href="/ventas/descargar-pdf" 
+            download
+            className="px-6 py-3 rounded-xl font-black text-xs transition-all duration-300 shadow-[0_10px_20px_-10px_rgba(162,57,202,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(162,57,202,0.8)] uppercase tracking-wider bg-gradient-to-r from-jewel to-fuschia text-stark hover:-translate-y-0.5 text-center flex items-center gap-2"
+        >
+            <span>📊</span> Descargar PDF de Hoy
+        </a>
+
+        <Link href="/dashboard" className="text-sm font-bold text-stark/60 hover:text-fuschia transition-colors uppercase tracking-widest whitespace-nowrap">
+            ← Volver
+        </Link>
+    </div>
+</div>
 
                 {/* TABLA DE HISTORIAL (Cristal Oscuro) */}
                 <div className="bg-white/5 backdrop-blur-md rounded-3xl shadow-[0_0_30px_rgba(71,23,246,0.1)] overflow-hidden border border-jewel/20">

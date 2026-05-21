@@ -39,31 +39,32 @@ class ProductController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         $producto = Producto::findOrFail($id);
 
         $request->validate([
+            // CORRECCIÓN: Buscamos en la tabla 'productos' y la llave a ignorar es el 'id'
             'clave' => 'required|string|max:50|unique:productos,clave,'.$id,
             'nombre' => 'required|string|max:255',
             'precio_inv' => 'required|numeric',
             'precio_venta' => 'required|numeric',
-            'categoria_id' => 'required|exists:categorias,id',
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Máximo 2MB
+            'categoria_id' => 'required',
+            'stock_minimo' => 'required|integer|min:0',
+            'stock_maximo' => 'required|integer|min:0|gte:stock_minimo', 
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', 
         ]);
 
         $datos = $request->except('imagen');
 
-        // Magia para guardar la foto
         if ($request->hasFile('imagen')) {
-            // Guardamos en la carpeta storage/app/public/productos
             $ruta = $request->file('imagen')->store('productos', 'public');
             $datos['imagen'] = $ruta;
         }
 
         $producto->update($datos);
 
-        return back()->with('success', 'Producto actualizado correctamente con su imagen.');
+        return back()->with('success', 'Producto y límites de stock actualizados correctamente.');
     }
 
     // 1. Mostrar el formulario de Nueva Pieza
