@@ -70,7 +70,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
+            'username' => trans('auth.throttle', [ // Cambiado de 'email' a 'username'
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -80,8 +80,9 @@ class LoginRequest extends FormRequest
     /**
      * Get the rate limiting throttle key for the request.
      */
-    public function throttleKey(): string
+   public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        // Cambia 'email' por 'username' aquí también
+        return Str::transliterate(Str::lower($this->string('username')).'|'.$this->ip());
     }
 }

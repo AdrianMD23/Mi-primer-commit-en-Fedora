@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
 
 export default function Catalogo({ auth, productos, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -11,95 +11,79 @@ export default function Catalogo({ auth, productos, filters }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user} header={<span>Consulta de Precios</span>}>
+        <AuthenticatedLayout user={auth.user} header={<span className="font-bold tracking-tight text-gray-500 uppercase text-xs">Catálogo de Joyería</span>}>
             <Head title="Catálogo de Joyería" />
 
-            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                {/* BUSCADOR ESTILIZADO (Cristal Oscuro) */}
-                <div className="mb-12 text-center">
-                    <h2 className="text-4xl font-serif italic mb-6 text-stark drop-shadow-md">Catálogo de Piezas</h2>
-                    <form onSubmit={handleSearch} className="max-w-xl mx-auto relative group">
-                        {/* Resplandor de fondo para el buscador */}
-                        <div className="absolute inset-0 bg-jewel/20 rounded-full blur-[20px] group-hover:bg-fuschia/20 transition-all duration-500"></div>
-                        
+                {/* CABECERA CON BOTÓN VOLVER */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4 px-2">
+                    <div>
+                        <h2 className="text-3xl font-black tracking-tight text-[#03363D]">Catálogo de Piezas</h2>
+                        <p className="text-sm font-medium text-gray-500 mt-1">Consulta de precios y existencias en tiempo real.</p>
+                    </div>
+                    <Link href="/dashboard" className="text-xs font-bold text-gray-400 hover:text-[#03363D] transition-colors uppercase tracking-widest flex items-center gap-2">
+                        <span>←</span> Volver al Panel
+                    </Link>
+                </div>
+
+                {/* BUSCADOR */}
+                <div className="mb-12 max-w-xl mx-auto">
+                    <form onSubmit={handleSearch} className="flex gap-2">
                         <input 
                             type="text" 
-                            placeholder="Buscar por clave o nombre de joya..." 
+                            placeholder="Buscar por clave o nombre..." 
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full rounded-full py-4 px-8 border border-jewel/30 bg-void/80 backdrop-blur-md shadow-[0_0_30px_rgba(71,23,246,0.15)] text-lg text-stark focus:ring-2 focus:ring-fuschia focus:border-fuschia placeholder-stark/30 transition-all relative z-10"
+                            className="flex-1 rounded-xl border-gray-200 bg-white py-3 px-4 text-sm focus:ring-[#03363D] focus:border-[#03363D] shadow-sm"
                         />
-                        <button type="submit" className="absolute right-2 top-2 bottom-2 px-8 rounded-full bg-gradient-to-r from-jewel to-fuschia text-stark font-black uppercase tracking-widest shadow-[0_0_15px_rgba(162,57,202,0.5)] hover:shadow-[0_0_25px_rgba(162,57,202,0.8)] hover:scale-105 transition-all z-20">
+                        <button type="submit" className="px-6 py-3 bg-[#03363D] text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#174D4D] transition-all">
                             Buscar
                         </button>
                     </form>
                 </div>
 
-                {/* GRID DE PRODUCTOS (Vitrinas de Cristal) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {/* GRID DE PRODUCTOS */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {productos.data.map((producto) => (
-                        <div key={producto.id} className="rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(71,23,246,0.1)] bg-white/5 backdrop-blur-md border border-jewel/20 hover:border-fuschia/50 hover:shadow-[0_0_40px_rgba(162,57,202,0.2)] transition-all duration-500 hover:-translate-y-2 group flex flex-col">
-                            
-                            {/* --- ZONA DE IMAGEN DE LA JOYA --- */}
-                            <div className="w-full h-56 bg-void/50 border-b border-jewel/30 relative overflow-hidden flex-shrink-0">
+                        <div key={producto.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all flex flex-col">
+                            <div className="w-full h-48 bg-gray-100 relative overflow-hidden">
                                 {producto.imagen ? (
-                                    <img 
-                                        src={`/storage/${producto.imagen}`} 
-                                        alt={producto.nombre} 
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                                    />
+                                    <img src={`/storage/${producto.imagen}`} alt={producto.nombre} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
-                                        <span className="text-5xl mb-2 drop-shadow-lg">📷</span>
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-stark">Sin Imagen</span>
+                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     </div>
                                 )}
-                                {/* Gradiente oscuro en la parte inferior de la foto para que resalte el texto de abajo */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-void/90 to-transparent"></div>
                             </div>
 
-                            {/* --- DETALLES DE LA JOYA --- */}
-                            <div className="p-6 flex flex-col flex-grow">
-                                <div className="flex justify-between items-start mb-4">
-                                    {/* Clave Neón */}
-                                    <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-jewel/20 text-[#8B5CF6] border border-jewel/50 shadow-[0_0_10px_rgba(71,23,246,0.3)]">
-                                        {producto.clave}
-                                    </span>
-                                    
-                                    {/* Stock */}
-                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 ${producto.stock > 0 ? 'text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'text-red-400 drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]'}`}>
-                                        {producto.stock > 0 ? `Disp: ${producto.stock}` : 'Agotado'}
+                            <div className="p-5 flex flex-col flex-grow">
+                                <div className="flex justify-between items-start mb-2">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">{producto.clave}</span>
+                                    <span className={`text-[9px] font-black uppercase ${producto.stock > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                        {producto.stock > 0 ? `Stock: ${producto.stock}` : 'Agotado'}
                                     </span>
                                 </div>
                                 
-                                <h3 className="text-xl font-serif italic text-stark mb-2 leading-tight flex-grow drop-shadow-md">
-                                    {producto.nombre}
-                                </h3>
-                                
-                                <p className="text-[10px] opacity-50 text-stark font-black mb-4 uppercase tracking-widest">
-                                    {producto.categoria?.nombre || 'General'} • {producto.talla || 'Unitalla'} • {producto.peso_gramos}g
+                                <h3 className="font-bold text-gray-800 text-sm mb-1">{producto.nombre}</h3>
+                                <p className="text-[10px] text-gray-500 mb-4 uppercase tracking-widest font-medium">
+                                    {producto.categoria?.nombre || 'General'} • {producto.peso_gramos}g
                                 </p>
 
-                                <div className="pt-4 border-t border-stark/10 flex justify-between items-end mt-auto">
-                                    <span className="text-3xl font-black text-stark drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                                <div className="mt-auto pt-4 border-t border-gray-50 flex justify-between items-center">
+                                    <span className="text-xl font-black text-[#03363D]">
                                         ${Number(producto.precio_venta).toLocaleString('es-MX', {minimumFractionDigits: 2})}
                                     </span>
-                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xl text-fuschia drop-shadow-[0_0_8px_rgba(162,57,202,0.6)] group-hover:animate-pulse">
-                                        ✨
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                {/* MENSAJE SI NO HAY RESULTADOS */}
                 {productos.data.length === 0 && (
-                    <div className="text-center py-20 bg-white/5 backdrop-blur-md rounded-3xl border border-jewel/20 shadow-[0_0_30px_rgba(71,23,246,0.1)]">
-                        <div className="text-6xl mb-4 opacity-50 drop-shadow-lg">🔍</div>
-                        <p className="text-stark font-serif italic text-2xl drop-shadow-md">No se encontraron piezas con ese nombre o clave.</p>
-                        <p className="text-stark/50 text-sm mt-2 uppercase tracking-widest font-bold">Intenta con otros términos de búsqueda.</p>
+                    <div className="text-center py-20">
+                        <p className="text-gray-500 font-bold text-lg">No se encontraron piezas con ese nombre o clave.</p>
+                        <button onClick={() => { setSearch(''); router.get(route('catalogo.index')); }} className="text-[#03363D] font-black underline mt-2 text-xs uppercase">Limpiar búsqueda</button>
                     </div>
                 )}
             </div>

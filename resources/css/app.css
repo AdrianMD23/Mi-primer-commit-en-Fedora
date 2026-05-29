@@ -3,20 +3,25 @@
 @tailwind utilities;
 
 :root {
-    /* MODO CLARO (Tu paleta elegante) */
-    --color-void: #F8F9F9;    /* Fondo claro */
-    --color-stark: #03363D;   /* Texto oscuro */
-    --color-fuschia: #A239CA; /* Neón acento */
-    --color-jewel: #4717F6;   /* Neón acento */
+    /* 🎨 NUEVO ESTILO FORMAL SILVEART (Secuestro de variables viejas) */
+    
+    /* Fondo principal de la página (antes oscuro, ahora gris perla muy limpio) */
+    --color-void: #F8F9F9;    
+
+    /* Color de texto principal y títulos (antes blanco, ahora tu verde corporativo) */
+    --color-stark: #03363D;   
+
+    /* Donde antes usaste morado y azul neón, ahora forzamos tus tonos elegantes */
+    --color-fuschia: #03363D; 
+    --color-jewel: #174D4D;   
+    
+    /* Botones generales */
+    --color-btn-start: #03363D; 
+    --color-btn-end: #174D4D; 
+    --color-btn-text: #FFFFFF;
 }
 
-[data-theme='dark'] {
-    /* TU MODO OSCURO ACTUAL */
-    --color-void: #0E0B16;
-    --color-stark: #E7DFDD;
-    --color-fuschia: #A239CA;
-    --color-jewel: #4717F6;
-}
+/* ❌ Eliminamos por completo el bloque [data-theme='dark'] para bloquear el sistema en modo claro */
 
 body {
     background-color: var(--color-void);

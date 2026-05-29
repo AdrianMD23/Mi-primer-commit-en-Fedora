@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/InputError'; // Mantengo tu componente de errores
 
 export default function Login({ status, canResetPassword }) {
+    // Usamos exactamente tu estructura de datos (con 'username')
     const { data, setData, post, processing, errors, reset } = useForm({
         username: '',
         password: '',
@@ -21,40 +22,74 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        // FONDO: Profundidad absoluta con el color VOID
-        <div className="min-h-screen flex flex-col justify-center items-center bg-[#0E0B16] relative overflow-hidden px-4">
-            <Head title="Bienvenido" />
+        <div className="min-h-screen flex w-full bg-[#F8F9F9] font-sans">
+            <Head title="Iniciar Sesión | SILVEART" />
 
-            {/* LUCES DE FONDO MÁGICAS (Fuschia y Jewel mezclándose en el fondo) */}
-            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#A239CA] opacity-20 rounded-full blur-[100px] pointer-events-none"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#4717F6] opacity-20 rounded-full blur-[100px] pointer-events-none"></div>
+            {/* PANEL IZQUIERDO: Branding Corporativo */}
+            <div className="hidden md:flex md:w-1/2 bg-[#03363D] flex-col justify-between p-12 relative overflow-hidden">
+                {/* Elementos decorativos sutiles */}
+                <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-white opacity-5 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#174D4D] opacity-20 rounded-full blur-3xl pointer-events-none"></div>
 
-            {status && <div className="mb-4 font-bold text-sm text-green-400 z-10">{status}</div>}
+                {/* Logo / Título superior */}
+                <div className="relative z-10 flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white text-[#03363D] flex items-center justify-center font-black rounded-sm text-xl shadow-lg">
+                        S
+                    </div>
+                    <span className="text-white tracking-[0.3em] text-sm font-black uppercase">
+                        Platería
+                    </span>
+                </div>
 
-            {/* CONTENEDOR PRINCIPAL: Tarjeta color STARK */}
-            <div className="bg-[#E7DFDD] rounded-[2rem] shadow-[0_20px_50px_-10px_rgba(71,23,246,0.15)] p-2 relative z-10 w-full max-w-md transition-all duration-500 hover:shadow-[0_20px_50px_-10px_rgba(162,57,202,0.2)]">
+                {/* Mensaje Central */}
+                <div className="relative z-10">
+                    <h1 className="text-5xl lg:text-6xl font-black text-white tracking-tighter mb-4 leading-tight">
+                        SILVEART
+                    </h1>
+                    <p className="text-white/70 text-lg max-w-md leading-relaxed font-light">
+                        Sistema de gestión integral y punto de venta diseñado para la excelencia operativa y el control preciso de tu negocio.
+                    </p>
+                </div>
+
+                {/* Pie de página del panel */}
+                <div className="relative z-10 text-white/40 text-xs tracking-widest uppercase font-semibold">
+                    &copy; {new Date().getFullYear()} Instituto Tecnológico Superior de Valladolid
+                </div>
+            </div>
+
+            {/* PANEL DERECHO: Formulario de Login */}
+            <div className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12 relative">
                 
-                {/* MARCO INTERNO */}
-                <div className="border border-[#0E0B16]/10 rounded-[1.5rem] p-8 sm:p-10 bg-white/40 backdrop-blur-sm">
-
-                    {/* ENCABEZADO */}
-                    <div className="text-center mb-10">
-                        <h2 className="text-4xl font-serif italic text-[#0E0B16] mb-1">Bienvenido</h2>
-                        <p className="text-[9px] tracking-[0.3em] uppercase font-black text-[#0E0B16]/50">
-                            Sistema de Gestión
-                        </p>
-                        {/* Ícono de destello usando el color FUSCHIA */}
-                        <div className="mt-4 flex justify-center">
-                            <span className="text-2xl text-[#A239CA] opacity-60">✧</span>
+                <div className="max-w-md w-full space-y-10">
+                    
+                    {/* Encabezado del Formulario */}
+                    <div>
+                        {/* Logo visible solo en móvil */}
+                        <div className="md:hidden flex items-center gap-3 mb-8">
+                            <div className="w-10 h-10 bg-[#03363D] text-white flex items-center justify-center font-black rounded-lg text-2xl shadow-lg">
+                                S
+                            </div>
+                            <span className="text-[#03363D] tracking-tighter text-2xl font-black">
+                                SILVEART
+                            </span>
                         </div>
+                        
+                        <h2 className="text-3xl font-black text-[#03363D] tracking-tight">
+                            Bienvenido de vuelta
+                        </h2>
+                        <p className="text-sm text-[#03363D]/60 mt-2 font-medium">
+                            Por favor, ingresa tus credenciales para acceder a tu panel de control.
+                        </p>
                     </div>
 
-                    {/* FORMULARIO */}
+                    {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
+
+                    {/* Formulario */}
                     <form onSubmit={submit} className="space-y-6">
                         
-                        {/* INPUT USUARIO */}
+                        {/* CAMPO USUARIO */}
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-[#0E0B16]/80 mb-2">
+                            <label htmlFor="username" className="block text-xs font-black tracking-widest text-[#03363D]/80 uppercase mb-2">
                                 Nombre de Usuario
                             </label>
                             <input
@@ -62,34 +97,37 @@ export default function Login({ status, canResetPassword }) {
                                 type="text"
                                 name="username"
                                 value={data.username}
-                                className="w-full bg-transparent border-0 border-b-2 border-[#0E0B16]/10 focus:border-[#4717F6] focus:ring-0 px-2 py-2 text-[#0E0B16] placeholder-[#0E0B16]/30 font-bold transition-colors text-sm"
-                                placeholder="Ingresa tu usuario"
+                                className="mt-1 block w-full rounded-lg border-gray-300 bg-white px-4 py-3 text-[#03363D] placeholder-gray-400 shadow-sm focus:border-[#03363D] focus:ring-[#03363D] transition-colors"
                                 autoComplete="username"
+                                placeholder="Ingresa tu usuario"
                                 autoFocus
                                 onChange={(e) => setData('username', e.target.value)}
                             />
-                            <InputError message={errors.username} className="mt-2" />
+                            {/* Usamos tu componente InputError */}
+                            <InputError message={errors.username} className="mt-2 text-red-500 font-bold text-xs" />
                         </div>
 
-                        {/* INPUT CONTRASEÑA */}
+                        {/* CAMPO CONTRASEÑA */}
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-[#0E0B16]/80 mb-2">
-                                Contraseña
-                            </label>
+                            <div className="flex justify-between items-center mb-2">
+                                <label htmlFor="password" className="block text-xs font-black tracking-widest text-[#03363D]/80 uppercase">
+                                    Contraseña
+                                </label>
+                            </div>
                             <input
                                 id="password"
                                 type="password"
                                 name="password"
                                 value={data.password}
-                                className="w-full bg-transparent border-0 border-b-2 border-[#0E0B16]/10 focus:border-[#4717F6] focus:ring-0 px-2 py-2 text-[#0E0B16] placeholder-[#0E0B16]/30 font-bold transition-colors text-sm"
-                                placeholder="••••••••"
+                                className="mt-1 block w-full rounded-lg border-gray-300 bg-white px-4 py-3 text-[#03363D] placeholder-gray-400 shadow-sm focus:border-[#03363D] focus:ring-[#03363D] transition-colors"
                                 autoComplete="current-password"
+                                placeholder="••••••••"
                                 onChange={(e) => setData('password', e.target.value)}
                             />
-                            <InputError message={errors.password} className="mt-2" />
+                            <InputError message={errors.password} className="mt-2 text-red-500 font-bold text-xs" />
                         </div>
 
-                        {/* RECUÉRDAME Y OLVIDÉ CONTRASEÑA */}
+                        {/* CHECKBOX RECORDARME */}
                         <div className="flex items-center justify-between pt-2">
                             <label className="flex items-center cursor-pointer group">
                                 <input
@@ -97,43 +135,36 @@ export default function Login({ status, canResetPassword }) {
                                     name="remember"
                                     checked={data.remember}
                                     onChange={(e) => setData('remember', e.target.checked)}
-                                    // El checkbox se pinta de JEWEL al seleccionarse
-                                    className="rounded border-[#0E0B16]/20 text-[#4717F6] shadow-sm focus:ring-[#4717F6] bg-transparent transition-colors"
+                                    className="rounded border-gray-300 text-[#03363D] shadow-sm focus:ring-[#03363D] transition-colors"
                                 />
-                                <span className="ml-2 text-[10px] font-bold text-[#0E0B16]/60 uppercase tracking-wider group-hover:text-[#4717F6] transition-colors">
-                                    Recuérdame
+                                <span className="ml-2 text-sm text-[#03363D]/70 font-medium group-hover:text-[#03363D] transition-colors">
+                                    Mantener sesión iniciada
                                 </span>
                             </label>
 
                             {canResetPassword && (
                                 <Link
                                     href={route('password.request')}
-                                    // Al pasar el mouse, brilla en FUSCHIA
-                                    className="text-[10px] font-bold text-[#0E0B16]/50 hover:text-[#A239CA] underline tracking-wider transition-colors"
+                                    className="text-xs font-bold text-[#03363D]/60 hover:text-[#03363D] transition-colors"
                                 >
                                     ¿Olvidaste tu contraseña?
                                 </Link>
                             )}
                         </div>
 
-                        {/* BOTÓN DE ENTRADA (Degradado Jewel -> Fuschia) */}
-                        <div className="pt-6">
+                        {/* BOTÓN DE SUBMIT */}
+                        <div className="pt-4">
                             <button
+                                type="submit"
                                 disabled={processing}
-                                className="w-full bg-gradient-to-r from-[#4717F6] to-[#A239CA] text-[#E7DFDD] py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-[0_10px_20px_-10px_rgba(162,57,202,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(71,23,246,0.7)] hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
+                                className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-lg shadow-lg shadow-[#03363D]/20 text-sm font-black tracking-widest uppercase text-white bg-gradient-to-r from-[#03363D] to-[#174D4D] hover:from-[#02262B] hover:to-[#03363D] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#03363D] transition-all disabled:opacity-50"
                             >
-                                {processing ? 'Autenticando...' : 'Entrar al Sistema'}
+                                {processing ? 'Autenticando...' : 'Ingresar al Sistema'}
                             </button>
                         </div>
                     </form>
-                </div>
-            </div>
 
-            {/* TEXTO INFERIOR */}
-            <div className="absolute bottom-8 w-full text-center z-10 pointer-events-none">
-                <p className="text-[#E7DFDD]/40 text-[10px] font-bold tracking-[0.4em] uppercase">
-                    Orgullosamente Artesanal
-                </p>
+                </div>
             </div>
         </div>
     );

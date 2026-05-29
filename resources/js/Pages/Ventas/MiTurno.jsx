@@ -4,77 +4,66 @@ import { Head, Link } from '@inertiajs/react';
 
 export default function MiTurno({ auth, resumen, fecha }) {
     return (
-        <AuthenticatedLayout user={auth.user} header={<span>Resumen de Turno</span>}>
+        <AuthenticatedLayout user={auth.user} header={<span className="font-bold tracking-tight text-gray-500 uppercase text-xs">Resumen de Turno</span>}>
             <Head title="Mi Turno" />
 
-            <div className="py-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                {/* ENCABEZADO */}
-                <div className="flex justify-between items-end mb-8">
+                {/* CABECERA FORMAL */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 px-2">
                     <div>
-                        <h2 className="text-4xl font-serif italic text-stark drop-shadow-md">Mi Caja Actual</h2>
-                        <p className="text-sm opacity-60 mt-1 text-stark uppercase tracking-widest font-bold">Operaciones del día: {fecha}</p>
+                        <h2 className="text-3xl font-black tracking-tight text-[#03363D]">Mi Caja Actual</h2>
+                        <p className="text-sm font-medium text-gray-500 mt-1">Operaciones registradas al corte: {fecha}</p>
                     </div>
-                    <Link href="/dashboard" className="text-sm font-bold text-stark/60 hover:text-fuschia transition-colors uppercase tracking-widest">
-                        ← Volver
+                    <Link href="/dashboard" className="text-xs font-bold text-gray-400 hover:text-[#03363D] transition-colors uppercase tracking-widest flex items-center gap-2">
+                        <span>←</span> Volver al Panel
                     </Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     
-                    {/* TARJETA DE EFECTIVO (Cristal Oscuro + Esmeralda) */}
-                    <div className="bg-white/5 backdrop-blur-md rounded-3xl shadow-[0_0_30px_rgba(16,185,129,0.15)] p-8 border border-emerald-500/30 relative overflow-hidden group flex flex-col justify-center">
-                        {/* Brillo de fondo */}
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-[40px] pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-700"></div>
-                        <div className="absolute top-[-10px] right-[-10px] text-9xl opacity-5 drop-shadow-lg pointer-events-none">💵</div>
-                        
-                        <h3 className="text-xs font-black text-stark/70 uppercase tracking-widest mb-2 relative z-10">Efectivo en Cajón</h3>
-                        
-                        <p className="text-6xl font-black text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] mb-6 relative z-10">
+                    {/* TARJETA EFECTIVO */}
+                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-center">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Efectivo en Cajón</h3>
+                        <p className="text-5xl font-black text-[#03363D] tracking-tighter mb-6">
                             ${Number(resumen.efectivo).toLocaleString('es-MX', {minimumFractionDigits: 2})}
                         </p>
-                        
-                        <div className="relative z-10">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl inline-block shadow-inner">
-                                * Este monto debes entregar al Gerente.
+                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
+                                ⚠️ Importante: Este monto total debe ser entregado al área de gerencia al finalizar el turno.
                             </p>
                         </div>
                     </div>
 
-                    {/* TARJETA DE OTROS MÉTODOS (Cristal Oscuro + Fuschia) */}
-                    <div className="bg-white/5 backdrop-blur-md rounded-3xl shadow-[0_0_30px_rgba(71,23,246,0.1)] p-8 flex flex-col justify-center border border-jewel/30 relative overflow-hidden group">
-                        {/* Brillo de fondo */}
-                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-fuschia/10 rounded-full blur-[40px] pointer-events-none group-hover:bg-fuschia/20 transition-all duration-700"></div>
+                    {/* TARJETA PAGOS ELECTRÓNICOS */}
+                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-8">Pagos Electrónicos</h3>
                         
-                        <h3 className="text-xl font-serif italic text-stark mb-6 border-b border-stark/10 pb-4 relative z-10">Pagos Electrónicos</h3>
-                        
-                        <div className="flex justify-between items-center mb-6 relative z-10">
-                            <span className="font-black text-stark/70 uppercase text-xs tracking-widest flex items-center gap-2">
-                                <span className="text-lg drop-shadow-md">💳</span> Tarjeta
-                            </span>
-                            <span className="font-black text-2xl text-fuschia drop-shadow-[0_0_8px_rgba(162,57,202,0.5)]">
-                                ${Number(resumen.tarjeta).toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                            </span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center relative z-10">
-                            <span className="font-black text-stark/70 uppercase text-xs tracking-widest flex items-center gap-2">
-                                <span className="text-lg drop-shadow-md">📱</span> Transferencia
-                            </span>
-                            <span className="font-black text-2xl text-fuschia drop-shadow-[0_0_8px_rgba(162,57,202,0.5)]">
-                                ${Number(resumen.transferencia).toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                            </span>
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center">
+                                <span className="font-bold text-sm text-gray-600">Tarjeta</span>
+                                <span className="text-xl font-black text-[#03363D]">
+                                    ${Number(resumen.tarjeta).toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                </span>
+                            </div>
+                            <div className="border-t border-gray-100 pt-6 flex justify-between items-center">
+                                <span className="font-bold text-sm text-gray-600">Transferencia</span>
+                                <span className="text-xl font-black text-[#03363D]">
+                                    ${Number(resumen.transferencia).toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* RESUMEN TOTAL (Barra Amplia Neón) */}
-                <div className="mt-8 bg-gradient-to-r from-void to-jewel/20 backdrop-blur-md rounded-3xl p-8 text-center border border-fuschia/30 shadow-[0_0_30px_rgba(162,57,202,0.15)] relative overflow-hidden">
-                    <p className="text-stark/80 font-bold text-sm uppercase tracking-widest leading-relaxed">
-                        Has realizado <span className="text-3xl text-fuschia font-black drop-shadow-[0_0_10px_rgba(162,57,202,0.6)] mx-2 align-middle">{resumen.cantidad_ventas}</span> ventas hoy, <br className="sm:hidden" />sumando un total general de <span className="text-3xl text-emerald-400 font-black drop-shadow-[0_0_10px_rgba(16,185,129,0.6)] mx-2 align-middle">${Number(resumen.total).toLocaleString('es-MX', {minimumFractionDigits: 2})}</span>.
+                {/* RESUMEN TOTAL (Barra de Cierre) */}
+                <div className="mt-8 bg-[#03363D] rounded-2xl p-8 text-center shadow-lg">
+                    <p className="text-white/60 font-bold text-[10px] uppercase tracking-widest mb-2">Resumen Operativo</p>
+                    <p className="text-white text-sm font-medium">
+                        Has realizado <span className="font-black text-white">{resumen.cantidad_ventas}</span> ventas hoy, 
+                        totalizando <span className="font-black text-white text-lg">${Number(resumen.total).toLocaleString('es-MX', {minimumFractionDigits: 2})}</span> en caja.
                     </p>
                 </div>
-
             </div>
         </AuthenticatedLayout>
     );

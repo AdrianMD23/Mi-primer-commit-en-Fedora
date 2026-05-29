@@ -4,10 +4,7 @@ import { Head, router, useForm, Link, usePage } from '@inertiajs/react';
 
 export default function CategoriasIndex({ auth, categorias, filters }) {
     const { flash } = usePage().props;
-    
-    // RED DE SEGURIDAD
     const listaCategorias = categorias?.data || categorias || [];
-    
     const [search, setSearch] = useState(filters?.search || '');
 
     useEffect(() => {
@@ -19,9 +16,7 @@ export default function CategoriasIndex({ auth, categorias, filters }) {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
-    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
-        nombre: ''
-    });
+    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({ nombre: '' });
 
     const abrirModalNuevo = () => {
         setEditingId(null);
@@ -47,84 +42,75 @@ export default function CategoriasIndex({ auth, categorias, filters }) {
     };
 
     const cambiarEstatus = (cat) => {
-        const accion = cat.activo ? 'inhabilitar' : 'habilitar';
-        if (confirm(`¿Estás seguro de ${accion} la categoría "${cat.nombre}"?`)) {
+        if (confirm(`¿Confirmas que deseas ${cat.activo ? 'inhabilitar' : 'habilitar'} "${cat.nombre}"?`)) {
             router.patch(route('categorias.toggle', cat.id));
         }
     };
 
     return (
-        <AuthenticatedLayout user={auth.user} header={<span>Gestión de Categorías</span>}>
+        <AuthenticatedLayout user={auth.user} header={<span className="font-bold tracking-tight text-gray-500 uppercase text-xs">Administración de Catálogo</span>}>
             <Head title="Categorías" />
 
-            <div className="py-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                {/* BOTÓN VOLVER */}
-                <div className="flex justify-end mb-6">
-                    <Link href={route('dashboard')} className="text-stark/60 font-bold text-sm hover:text-fuschia transition-colors flex items-center gap-2 uppercase tracking-widest">
-                        ← Volver al Panel
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 px-2 sm:px-0">
+                    <div>
+                        <h2 className="text-3xl font-black tracking-tight text-[#03363D]">Gestión de Categorías</h2>
+                        <p className="text-sm font-medium text-gray-500 mt-1">Clasificación de productos para el sistema.</p>
+                    </div>
+                    <Link href={route('dashboard')} className="text-xs font-bold text-gray-400 hover:text-[#03363D] transition-colors uppercase tracking-widest flex items-center gap-2">
+                        <span>←</span> Volver al Panel
                     </Link>
                 </div>
 
-                {/* ALERTAS ESTILO NEÓN */}
                 {flash?.success && (
-                    <div className="mb-6 bg-emerald-500/10 border-l-4 border-emerald-500 text-emerald-400 p-4 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)] font-bold tracking-wider">
-                        <span className="drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]">✅</span> {flash.success}
+                    <div className="mb-6 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg shadow-sm flex items-center gap-3">
+                        <span className="text-emerald-500 font-black">✓</span>
+                        <span className="font-medium text-sm text-emerald-700">{flash.success}</span>
                     </div>
                 )}
 
-                {/* BARRA SUPERIOR: BUSCADOR Y BOTÓN NUEVO (Cristal Oscuro) */}
-                <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl shadow-[0_0_30px_rgba(71,23,246,0.1)] mb-8 flex flex-col sm:flex-row gap-4 items-center border border-jewel/30">
-                    <input 
-                        type="text" placeholder="🔍 Buscar categoría..." 
-                        value={search} onChange={e => setSearch(e.target.value)}
-                        className="flex-1 w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia py-3 text-lg font-bold placeholder-stark/30 transition-colors"
-                    />
-                    <button onClick={abrirModalNuevo} className="w-full sm:w-auto bg-gradient-to-r from-jewel to-fuschia text-stark px-8 py-3 rounded-xl font-black text-lg shadow-[0_10px_20px_-10px_rgba(71,23,246,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(162,57,202,0.8)] hover:-translate-y-1 transition-all flex justify-center items-center gap-2 whitespace-nowrap uppercase tracking-wider">
-                        ➕ Nueva Categoría
+                <div className="bg-white p-6 rounded-2xl shadow-sm mb-6 flex flex-col sm:flex-row gap-4 items-center border border-gray-200">
+                    <div className="relative w-full flex-1">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" placeholder="Buscar categoría..." value={search} onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 focus:ring-[#03363D] focus:border-[#03363D] transition-colors text-sm font-medium" />
+                    </div>
+                    <button onClick={abrirModalNuevo} className="w-full sm:w-auto bg-[#03363D] text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-md hover:bg-[#174D4D] transition-all flex justify-center items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                        Nueva Categoría
                     </button>
                 </div>
 
-                {/* TABLA (Cristal Oscuro) */}
-                <div className="bg-white/5 backdrop-blur-md rounded-3xl shadow-[0_0_30px_rgba(71,23,246,0.1)] overflow-hidden border border-jewel/20">
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
                     <table className="min-w-full text-sm text-left border-collapse">
-                        <thead className="bg-gradient-to-r from-void to-jewel/20 border-b border-jewel/30 text-stark/70">
+                        <thead className="bg-gray-50/80 border-b border-gray-200">
                             <tr>
-                                <th className="px-6 py-4 font-black uppercase tracking-widest text-xs">Nombre de la Categoría</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-widest text-xs text-center">Acciones</th>
+                                <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-gray-500">Nombre</th>
+                                <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-gray-500 text-right">Estatus / Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-stark/5">
+                        <tbody className="divide-y divide-gray-100">
                             {listaCategorias.length === 0 ? (
-                                <tr><td colSpan="2" className="text-center py-10 font-bold text-stark/50 italic">No se encontraron categorías.</td></tr>
+                                <tr><td colSpan="2" className="text-center py-10 font-bold text-gray-400 italic">No se encontraron categorías.</td></tr>
                             ) : (
                                 listaCategorias.map(cat => (
-                                    <tr key={cat.id} className={`transition-colors ${cat.activo ? 'hover:bg-fuschia/10 text-stark' : 'bg-void/40 text-stark/40'}`}>
-                                        <td className="px-6 py-4">
-                                            <span className="font-black text-lg block drop-shadow-sm">{cat.nombre}</span>
-                                            {!cat.activo && (
-                                                <span className="bg-red-500/20 text-red-400 border border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.2)] text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest mt-2 inline-block">
-                                                    Inactiva
-                                                </span>
-                                            )}
+                                    <tr key={cat.id} className={`group hover:bg-gray-50 transition-colors ${cat.activo ? '' : 'opacity-60 bg-gray-50/50'}`}>
+                                        <td className="px-6 py-5 font-bold text-[#03363D] text-sm">
+                                            {cat.nombre}
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex justify-center gap-3">
-                                                {/* BOTÓN EDITAR */}
-                                                <button onClick={() => abrirModalEditar(cat)} className="px-4 py-2 bg-white/5 text-stark border border-stark/20 rounded-lg font-bold shadow-sm hover:bg-fuschia hover:border-fuschia hover:shadow-[0_0_15px_rgba(162,57,202,0.5)] transition-all duration-300" title="Editar">
-                                                    ✏️
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-2 items-center">
+                                                <span className={`mr-4 text-[10px] font-black uppercase tracking-widest ${cat.activo ? 'text-emerald-600' : 'text-red-400'}`}>
+                                                    {cat.activo ? 'Activa' : 'Inactiva'}
+                                                </span>
+                                                <button onClick={() => abrirModalEditar(cat)} className="p-2 bg-white text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-[#03363D] hover:border-gray-300 transition-all shadow-sm opacity-100 sm:opacity-0 group-hover:opacity-100" title="Editar">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                                 </button>
-                                                {/* BOTÓN INTERRUPTOR (Habilitar/Deshabilitar) */}
-                                                <button 
-                                                    onClick={() => cambiarEstatus(cat)} 
-                                                    className={`px-4 py-2 border rounded-lg font-bold shadow-sm transition-all duration-300 ${
-                                                        cat.activo 
-                                                        ? 'bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500 hover:text-void hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
-                                                        : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500 hover:text-void hover:shadow-[0_0_15px_rgba(16,185,129,0.5)]'
-                                                    }`}
-                                                    title={cat.activo ? "Inhabilitar" : "Habilitar"}
-                                                >
-                                                    {cat.activo ? '🚫' : '✅'}
+                                                <button onClick={() => cambiarEstatus(cat)} className={`p-2 border rounded-lg transition-all shadow-sm opacity-100 sm:opacity-0 group-hover:opacity-100 ${cat.activo ? 'bg-white text-red-500 border-red-200 hover:bg-red-50' : 'bg-white text-emerald-600 border-emerald-200 hover:bg-emerald-50'}`} title={cat.activo ? "Inhabilitar" : "Habilitar"}>
+                                                    {cat.activo ? <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>}
                                                 </button>
                                             </div>
                                         </td>
@@ -136,31 +122,25 @@ export default function CategoriasIndex({ auth, categorias, filters }) {
                 </div>
             </div>
 
-            {/* MODAL CREAR / EDITAR (Cristal Oscuro) */}
+            {/* MODAL CORPORATIVO */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-                    <div className="bg-void border border-jewel/30 p-8 rounded-3xl shadow-[0_0_40px_rgba(71,23,246,0.2)] w-full max-w-md">
-                        <div className="flex justify-between items-center mb-6 border-b border-stark/10 pb-4">
-                            <h2 className="text-2xl font-serif italic text-stark drop-shadow-md">{editingId ? 'Editar Categoría' : 'Nueva Categoría'}</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-stark font-black text-xl hover:text-fuschia transition-colors">✕</button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
+                    <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+                        <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                            <h2 className="text-lg font-black text-[#03363D] tracking-tight">{editingId ? 'Editar Categoría' : 'Nueva Categoría'}</h2>
+                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-lg hover:bg-gray-100">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
                         </div>
-
                         <form onSubmit={submit} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-black uppercase tracking-widest text-stark/80 mb-2">Nombre de la Categoría *</label>
-                                <input 
-                                    type="text" 
-                                    value={data.nombre} 
-                                    onChange={e => setData('nombre', e.target.value)} 
-                                    className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia transition-colors placeholder-stark/30 py-3" 
-                                    placeholder="Ej. Anillos, Pulseras..." 
-                                    required 
-                                />
-                                {errors.nombre && <p className="text-fuschia text-xs mt-1 font-bold drop-shadow-sm">{errors.nombre}</p>}
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Nombre de la Categoría *</label>
+                                <input type="text" value={data.nombre} onChange={e => setData('nombre', e.target.value)} 
+                                       className="w-full rounded-lg bg-[#F8F9F9] border border-gray-200 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] transition-colors text-sm px-4 py-2.5 font-medium" placeholder="Ej. Anillos, Pulseras..." required />
+                                {errors.nombre && <p className="text-red-500 text-xs mt-1.5 font-bold">{errors.nombre}</p>}
                             </div>
-                            
-                            <button disabled={processing} className="w-full mt-8 py-4 bg-gradient-to-r from-jewel to-fuschia text-stark rounded-xl font-black text-sm shadow-[0_10px_20px_-10px_rgba(71,23,246,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(162,57,202,0.8)] hover:-translate-y-1 transition-all uppercase tracking-widest disabled:opacity-50">
-                                {processing ? 'Guardando...' : 'Guardar'}
+                            <button disabled={processing} className="w-full mt-6 py-3.5 bg-[#03363D] text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-md hover:bg-[#174D4D] transition-all disabled:opacity-50">
+                                {processing ? 'Guardando...' : 'Guardar Cambios'}
                             </button>
                         </form>
                     </div>

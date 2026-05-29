@@ -33,6 +33,10 @@ export default {
                 fuschia: 'var(--color-fuschia)',
                 jewel: 'var(--color-jewel)',
                 stark: 'var(--color-stark)',
+                // NUEVOS COLORES PARA BOTONES:
+                'btn-start': 'var(--color-btn-start)',
+                'btn-end': 'var(--color-btn-end)',
+                'btn-text': 'var(--color-btn-text)',
             }
         },
     },

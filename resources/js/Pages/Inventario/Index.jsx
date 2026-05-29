@@ -31,8 +31,8 @@ export default function InventarioIndex({ auth, productos, categorias, filters }
             clave: prod.clave, nombre: prod.nombre, 
             precio_inv: prod.precio_inv, precio_venta: prod.precio_venta, 
             categoria_id: prod.categoria_id, 
-            stock_minimo: prod.stock_minimo || 0, // Cargamos el valor de la BD
-            stock_maximo: prod.stock_maximo || 0, // Cargamos el valor de la BD
+            stock_minimo: prod.stock_minimo || 0,
+            stock_maximo: prod.stock_maximo || 0,
             imagen: null, _method: 'put'
         });
         clearErrors();
@@ -119,257 +119,243 @@ export default function InventarioIndex({ auth, productos, categorias, filters }
     };
 
     return (
-        <AuthenticatedLayout user={auth.user} header={<span>Gestión de Almacén</span>}>
+        <AuthenticatedLayout user={auth.user} header={<span className="font-bold tracking-tight text-gray-500 uppercase text-xs">Gestión de Almacén</span>}>
             <Head title="Inventario" />
 
-            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* --- BOTÓN VOLVER AL PANEL --- */}
-                <div className="flex justify-end mb-6">
-                    <Link href={route('dashboard')} className="text-stark/60 font-bold text-sm hover:text-fuschia transition-colors flex items-center gap-2 uppercase tracking-widest">
-                        ← Volver al Panel
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 px-4 sm:px-0">
+                    <div>
+                        <h2 className="text-3xl font-black tracking-tight text-[#03363D]">Inventario General</h2>
+                        <p className="text-sm font-medium text-gray-500 mt-1">Consulta y gestiona las existencias de productos en tiempo real.</p>
+                    </div>
+                    <Link href={route('dashboard')} className="text-xs font-bold text-gray-400 hover:text-[#03363D] transition-colors uppercase tracking-widest flex items-center gap-2">
+                        <span>←</span> Volver al Panel
                     </Link>
                 </div>
-                {/* ----------------------------- */}
                 
-                {/* Alertas de Éxito o Error (Estilo Dark/Neon) */}
+                {/* Alertas de Éxito o Error */}
                 {errors?.error && (
-                    <div className="mb-6 bg-red-900/30 border-l-4 border-red-500 text-red-200 p-4 rounded shadow-[0_0_15px_rgba(239,68,68,0.2)]">
-                        <p className="font-bold tracking-wider uppercase text-red-400 text-xs mb-1">⚠️ Acción Bloqueada</p>
-                        <p>{errors.error}</p>
+                    <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm">
+                        <p className="font-bold tracking-wider uppercase text-red-700 text-xs mb-1">⚠️ Acción Bloqueada</p>
+                        <p className="text-red-600 text-sm">{errors.error}</p>
                     </div>
                 )}
                 {flash?.success && (
-                    <div className="mb-6 bg-emerald-900/30 border-l-4 border-emerald-500 text-emerald-200 p-4 rounded shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                        <p className="font-bold tracking-wider uppercase text-emerald-400 text-xs mb-1">✅ Éxito</p>
-                        <p>{flash.success}</p>
+                    <div className="mb-6 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg shadow-sm">
+                        <p className="font-bold tracking-wider uppercase text-emerald-700 text-xs mb-1">✅ Éxito</p>
+                        <p className="text-emerald-600 text-sm">{flash.success}</p>
                     </div>
                 )}
 
-                {/* BARRA DE BÚSQUEDA Y FILTROS (Cristal Oscuro) */}
-                <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl shadow-[0_0_30px_rgba(71,23,246,0.1)] mb-8 flex flex-col lg:flex-row gap-4 items-center border border-jewel/30">
-                    <input 
-                        type="text" placeholder="🔍 Buscar por clave o nombre..." 
-                        value={search} onChange={e => setSearch(e.target.value)}
-                        className="flex-1 w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia py-3 text-lg font-bold placeholder-stark/30 transition-colors"
-                    />
+                {/* BARRA DE BÚSQUEDA Y FILTROS */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm mb-6 flex flex-col lg:flex-row gap-4 items-center border border-gray-200">
+                    <div className="relative w-full flex-1">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input 
+                            type="text" placeholder="Buscar por clave o nombre..." 
+                            value={search} onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 focus:ring-[#03363D] focus:border-[#03363D] transition-colors text-sm font-medium"
+                        />
+                    </div>
                     
                     <select 
                         value={categoriaId} onChange={e => setCategoriaId(e.target.value)}
-                        className="w-full lg:w-1/3 rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia py-3 font-bold transition-colors"
+                        className="w-full lg:w-1/4 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 focus:ring-[#03363D] focus:border-[#03363D] py-2.5 transition-colors text-sm font-medium"
                     >
-                        <option value="" className="bg-void">Todas las Categorías</option>
+                        <option value="">Todas las Categorías</option>
                         {categorias.map(cat => (
-                            <option key={cat.id} value={cat.id} className="bg-void">{cat.nombre}</option>
+                            <option key={cat.id} value={cat.id}>{cat.nombre}</option>
                         ))}
                     </select>
 
                     <Link href={route('inventario.create')} 
-                          className="w-full lg:w-auto bg-gradient-to-r from-jewel to-fuschia text-stark px-8 py-3 rounded-xl font-black text-lg shadow-[0_10px_20px_-10px_rgba(71,23,246,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(162,57,202,0.8)] hover:-translate-y-1 transition-all flex justify-center items-center gap-2 whitespace-nowrap uppercase tracking-wider">
-                        ➕ Nueva Pieza
+                          className="w-full lg:w-auto bg-[#03363D] text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-md hover:bg-[#174D4D] hover:shadow-lg transition-all flex justify-center items-center gap-2 whitespace-nowrap">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                        Nueva Pieza
                     </Link>
                 </div>
 
-                {/* TABLA DE INVENTARIO (Cristal Oscuro) */}
-                <div className="bg-white/5 backdrop-blur-md rounded-3xl shadow-[0_0_30px_rgba(71,23,246,0.1)] overflow-hidden border border-jewel/20">
-                    <table className="min-w-full text-sm text-left border-collapse">
-                        <thead className="bg-gradient-to-r from-void to-jewel/20 border-b border-jewel/30 text-stark">
-                            <tr>
-                                <th className="px-6 py-4 font-black uppercase tracking-widest text-xs text-stark/70">Foto</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-widest text-xs text-stark/70">Clave & Producto</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-widest text-xs text-stark/70 text-center">Stock</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-widest text-xs text-stark/70">Categoría</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-widest text-xs text-stark/70">Precio Venta</th>
-                                <th className="px-6 py-4 font-black uppercase tracking-widest text-xs text-stark/70 text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-stark/5">
-                            {productos.data.map(prod => (
-                                <tr key={prod.id} className="hover:bg-fuschia/10 transition-colors text-stark">
-                                    <td className="px-6 py-4">
-                                        {prod.imagen ? (
-                                            <img src={`/storage/${prod.imagen}`} alt={prod.nombre} className="w-14 h-14 object-cover rounded-lg shadow-sm border border-jewel/30" />
-                                        ) : (
-                                            <div className="w-14 h-14 bg-void/50 rounded-lg flex items-center justify-center text-xl shadow-inner opacity-50 border border-stark/10">📷</div>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-[10px] uppercase font-black tracking-widest text-fuschia">{prod.clave}</span>
-                                        <p className="font-bold text-stark text-base drop-shadow-sm">{prod.nombre}</p>
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
-                                        {/* Badge de Stock Neón */}
-                                        <span className={`px-3 py-1 rounded-full font-black text-sm border ${prod.stock > 0 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'bg-red-500/10 text-red-400 border-red-500/40 shadow-[0_0_10px_rgba(239,68,68,0.2)]'}`}>
-                                            {prod.stock}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 font-bold text-stark/60">{prod.categoria?.nombre || 'N/A'}</td>
-                                    <td className="px-6 py-4 font-black text-lg text-jewel drop-shadow-[0_0_8px_rgba(71,23,246,0.5)]">
-                                        ${Number(prod.precio_venta).toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex justify-center gap-2">
-                                            <button onClick={() => abrirAjusteStock(prod)} className="px-3 py-2 bg-jewel/20 text-stark border border-jewel/50 rounded-lg font-bold shadow-sm hover:bg-jewel hover:shadow-[0_0_15px_rgba(71,23,246,0.5)] transition-all" title="Ajustar Stock">
-                                                📦
-                                            </button>
-                                            <button onClick={() => abrirEdicion(prod)} className="px-3 py-2 bg-white/10 text-stark border border-stark/30 rounded-lg font-bold shadow-sm hover:bg-fuschia hover:border-fuschia hover:shadow-[0_0_15px_rgba(162,57,202,0.5)] transition-all" title="Editar Producto">
-                                                ✏️
-                                            </button>
-                                            <button onClick={() => confirmarBorrado(prod)} className="px-3 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded-lg font-bold shadow-sm hover:bg-red-500 hover:text-void hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] transition-all" title="Borrar Producto">
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    </td>
+                {/* TABLA DE INVENTARIO */}
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full text-sm text-left border-collapse">
+                            <thead className="bg-gray-50/80 border-b border-gray-200">
+                                <tr>
+                                    <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-gray-500">Imagen</th>
+                                    <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-gray-500">Clave & Producto</th>
+                                    <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-gray-500 text-center">Stock Actual</th>
+                                    <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-gray-500">Categoría</th>
+                                    <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-gray-500">Precio Venta</th>
+                                    <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-gray-500 text-right">Acciones Rápidas</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {productos.data.map(prod => (
+                                    <tr key={prod.id} className="hover:bg-gray-50 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            {prod.imagen ? (
+                                                <img src={`/storage/${prod.imagen}`} alt={prod.nombre} className="w-12 h-12 object-cover rounded-lg shadow-sm border border-gray-200" />
+                                            ) : (
+                                                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">
+                                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-[10px] uppercase font-black tracking-widest text-[#03363D]/60">{prod.clave}</span>
+                                            <p className="font-bold text-[#03363D] text-sm mt-0.5">{prod.nombre}</p>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className={`inline-flex items-center justify-center px-3 py-1 rounded-md text-[10px] font-black tracking-widest uppercase border ${prod.stock > (prod.stock_minimo || 0) ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
+                                                {prod.stock}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 font-semibold text-gray-500 text-xs">{prod.categoria?.nombre || 'N/A'}</td>
+                                        <td className="px-6 py-4 font-black text-sm text-[#03363D]">
+                                            ${Number(prod.precio_venta).toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => abrirAjusteStock(prod)} className="p-2 bg-white text-gray-500 border border-gray-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm" title="Ajustar Stock">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                                                </button>
+                                                <button onClick={() => abrirEdicion(prod)} className="p-2 bg-white text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-[#03363D] hover:border-gray-300 transition-all shadow-sm" title="Editar Producto">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                                </button>
+                                                <button onClick={() => confirmarBorrado(prod)} className="p-2 bg-white text-gray-500 border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all shadow-sm" title="Borrar Producto">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
             </div>
 
-            {/* MODAL DE EDICIÓN FLOTANTE (Cristal Oscuro) */}
+            {/* MODAL DE EDICIÓN FLOTANTE */}
             {editingProduct && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-                    <div className="bg-void border border-jewel/30 p-8 rounded-3xl shadow-[0_0_40px_rgba(71,23,246,0.2)] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-6 border-b border-stark/10 pb-4">
-                            <h2 className="text-2xl font-serif italic text-stark drop-shadow-md">Editar: {editingProduct.nombre}</h2>
-                            <button onClick={() => setEditingProduct(null)} className="text-stark font-black text-xl hover:text-fuschia transition-colors">✕</button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
+                    <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                            <h2 className="text-xl font-black text-[#03363D] tracking-tight">Editar Producto: <span className="text-gray-500 font-medium">{editingProduct.nombre}</span></h2>
+                            <button onClick={() => setEditingProduct(null)} className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-lg hover:bg-gray-100">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
                         </div>
 
-                        <form onSubmit={submitEdicion} className="space-y-4">
-                            <div className="bg-white/5 p-4 rounded-2xl shadow-sm border border-jewel/20">
-                                <label className="block text-xs font-black uppercase tracking-widest mb-2 text-stark/80">📷 Subir Fotografía</label>
+                        <form onSubmit={submitEdicion} className="space-y-5">
+                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <label className="block text-[10px] font-black uppercase tracking-widest mb-2 text-gray-500">Fotografía del Producto</label>
                                 <input type="file" accept="image/*" onChange={e => setData('imagen', e.target.files[0])}
-                                       className="w-full text-sm text-stark/60 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:uppercase file:tracking-widest file:font-black file:bg-jewel file:text-stark hover:file:bg-fuschia transition-all file:shadow-[0_0_10px_rgba(71,23,246,0.4)]" />
+                                       className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:uppercase file:tracking-widest file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 transition-all cursor-pointer" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80">Clave</label>
-                                    <input type="text" value={data.clave} onChange={e => setData('clave', e.target.value)} className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia transition-colors" required />
-                                    {formErrors.clave && <p className="text-fuschia text-xs mt-1 font-bold">{formErrors.clave}</p>}
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-gray-500">Clave</label>
+                                    <input type="text" value={data.clave} onChange={e => setData('clave', e.target.value)} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] transition-colors text-sm px-4 py-2.5" required />
+                                    {formErrors.clave && <p className="text-red-500 text-xs mt-1 font-bold">{formErrors.clave}</p>}
                                 </div>
                                 <div className="col-span-2 sm:col-span-1">
-                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80">Categoría</label>
-                                    <select value={data.categoria_id} onChange={e => setData('categoria_id', e.target.value)} className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia transition-colors" required>
-                                        <option value="" className="bg-void">Selecciona una...</option>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-gray-500">Categoría</label>
+                                    <select value={data.categoria_id} onChange={e => setData('categoria_id', e.target.value)} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] transition-colors text-sm px-4 py-2.5 font-medium" required>
+                                        <option value="">Selecciona una...</option>
                                         {categorias.map(cat => (
-                                            <option key={cat.id} value={cat.id} className="bg-void">{cat.nombre}</option>
+                                            <option key={cat.id} value={cat.id}>{cat.nombre}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="col-span-2">
-                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80">Nombre</label>
-                                    <input type="text" value={data.nombre} onChange={e => setData('nombre', e.target.value)} className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia transition-colors" required />
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-gray-500">Nombre del Producto</label>
+                                    <input type="text" value={data.nombre} onChange={e => setData('nombre', e.target.value)} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] transition-colors text-sm px-4 py-2.5" required />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80">Precio Inversión ($)</label>
-                                    <input type="number" step="0.01" value={data.precio_inv} onChange={e => setData('precio_inv', e.target.value)} className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia transition-colors" required />
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-gray-500">Costo de Inversión ($)</label>
+                                    <input type="number" step="0.01" value={data.precio_inv} onChange={e => setData('precio_inv', e.target.value)} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] transition-colors text-sm px-4 py-2.5 font-medium" required />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80">Precio Venta ($)</label>
-                                    <input type="number" step="0.01" value={data.precio_venta} onChange={e => setData('precio_venta', e.target.value)} className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia transition-colors" required />
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-gray-500">Precio de Venta ($)</label>
+                                    <input type="number" step="0.01" value={data.precio_venta} onChange={e => setData('precio_venta', e.target.value)} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] transition-colors text-sm px-4 py-2.5 font-medium" required />
                                 </div>
                             </div>
-                            {/* NUEVOS CAMPOS DE STOCK MIN / MAX */}
-                            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-stark/10">
+                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
                                 <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80 text-yellow-400">⚠️ Alerta Mínima</label>
-                                    <input 
-                                        type="number" min="0" 
-                                        value={data.stock_minimo} 
-                                        onChange={e => setData('stock_minimo', e.target.value)} 
-                                        className="w-full rounded-xl bg-void/50 border border-yellow-500/30 text-stark focus:ring-yellow-500 focus:border-yellow-500 transition-colors" 
-                                        required 
-                                    />
-                                    {formErrors.stock_minimo && <p className="text-fuschia text-xs mt-1 font-bold">{formErrors.stock_minimo}</p>}
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-amber-600">Alerta Mínima</label>
+                                    <input type="number" min="0" value={data.stock_minimo} onChange={e => setData('stock_minimo', e.target.value)} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-amber-500 focus:border-amber-500 transition-colors text-sm px-4 py-2.5" required />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80 text-emerald-400">📦 Límite Máximo</label>
-                                    <input 
-                                        type="number" min="0" 
-                                        value={data.stock_maximo} 
-                                        onChange={e => setData('stock_maximo', e.target.value)} 
-                                        className="w-full rounded-xl bg-void/50 border border-emerald-500/30 text-stark focus:ring-emerald-500 focus:border-emerald-500 transition-colors" 
-                                        required 
-                                    />
-                                    {formErrors.stock_maximo && <p className="text-fuschia text-xs mt-1 font-bold">{formErrors.stock_maximo}</p>}
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-emerald-600">Límite Máximo</label>
+                                    <input type="number" min="0" value={data.stock_maximo} onChange={e => setData('stock_maximo', e.target.value)} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-emerald-500 focus:border-emerald-500 transition-colors text-sm px-4 py-2.5" required />
                                 </div>
                             </div>
-                            <button disabled={processing} className="w-full mt-6 py-4 bg-gradient-to-r from-jewel to-fuschia text-stark rounded-xl font-black text-sm uppercase tracking-widest shadow-[0_10px_20px_-10px_rgba(71,23,246,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(162,57,202,0.8)] hover:-translate-y-1 transition-all disabled:opacity-50">
-                                {processing ? 'Subiendo...' : 'Guardar Cambios'}
-                            </button>
+                            <div className="pt-2">
+                                <button disabled={processing} className="w-full py-3.5 bg-[#03363D] text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-md hover:bg-[#174D4D] transition-colors disabled:opacity-50">
+                                    {processing ? 'Guardando Cambios...' : 'Actualizar Producto'}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
             )}
 
-            {/* MODAL DE AJUSTE DE STOCK (Cristal Oscuro) */}
+            {/* MODAL DE AJUSTE DE STOCK */}
             {adjustingStock && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-                    <div className="bg-void border border-jewel/30 p-8 rounded-3xl shadow-[0_0_40px_rgba(71,23,246,0.2)] w-full max-w-md">
-                        <div className="flex justify-between items-center mb-6 border-b border-stark/10 pb-4">
-                            <h2 className="text-2xl font-serif italic text-stark drop-shadow-md">Ajuste de Stock</h2>
-                            <button onClick={() => setAdjustingStock(null)} className="text-stark font-black text-xl hover:text-fuschia transition-colors">✕</button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
+                    <div className="bg-white border border-gray-200 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+                        <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                            <h2 className="text-xl font-black text-[#03363D] tracking-tight">Ajuste de Existencias</h2>
+                            <button onClick={() => setAdjustingStock(null)} className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-lg hover:bg-gray-100">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
                         </div>
 
-                        <div className="mb-6 text-center bg-white/5 p-4 rounded-2xl shadow-sm border border-jewel/20">
-                            <p className="text-[10px] font-black opacity-60 uppercase tracking-widest text-stark">{adjustingStock.nombre}</p>
-                            <p className="text-xs font-bold uppercase tracking-widest text-stark/50 mt-2">Stock en Almacén</p>
-                            <p className="text-5xl font-black text-fuschia drop-shadow-[0_0_10px_rgba(162,57,202,0.5)]">{adjustingStock.stock}</p>
+                        <div className="mb-6 text-center bg-gray-50 p-5 rounded-xl border border-gray-200">
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{adjustingStock.nombre}</p>
+                            <p className="text-xs font-medium text-gray-400 mt-2">Stock Actual en Sistema</p>
+                            <p className="text-4xl font-black text-[#03363D] mt-1">{adjustingStock.stock}</p>
                         </div>
 
-                        <form onSubmit={submitAjusteStock} className="space-y-4">
+                        <form onSubmit={submitAjusteStock} className="space-y-5">
                             <div>
-                                <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80">Tipo de Movimiento</label>
-                                <select value={stockData.tipo} onChange={handleTipoStockChange} className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia font-bold transition-colors" required>
-                                    <option value="Entrada" className="bg-void">📥 Entrada (Agregar)</option>
-                                    <option value="Salida" className="bg-void">📤 Salida (Retiro)</option>
-                                    <option value="Ajuste" className="bg-void">⚠️ Ajuste (Merma)</option>
+                                <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-gray-500">Tipo de Movimiento</label>
+                                <select value={stockData.tipo} onChange={handleTipoStockChange} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] text-sm font-medium px-4 py-2.5" required>
+                                    <option value="Entrada">Entrada (Sumar al stock)</option>
+                                    <option value="Salida">Salida (Restar del stock)</option>
+                                    <option value="Ajuste">Ajuste / Auditoría</option>
                                 </select>
-                                {stockErrors.tipo && <p className="text-fuschia text-xs mt-1 font-bold">{stockErrors.tipo}</p>}
                             </div>
                             
                             <div>
-                                <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80">Cantidad a Mover</label>
-                                <input type="number" min="1" value={stockData.cantidad} onChange={e => setStockData('cantidad', e.target.value)} className="w-full rounded-xl bg-void/50 border border-jewel/30 text-fuschia text-xl font-black text-center focus:ring-fuschia focus:border-fuschia transition-colors shadow-inner" required />
-                                {stockErrors.cantidad && <p className="text-fuschia text-xs mt-1 font-bold">{stockErrors.cantidad}</p>}
+                                <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-gray-500">Cantidad a Procesar</label>
+                                <input type="number" min="1" value={stockData.cantidad} onChange={e => setStockData('cantidad', e.target.value)} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] text-lg font-black text-center focus:ring-[#03363D] focus:border-[#03363D] py-2" required />
                             </div>
                             
                             <div>
-                                <label className="block text-xs font-black uppercase tracking-widest mb-1 text-stark/80">Motivo de la Auditoría</label>
-                                
-                                <select 
-                                    value={motivoSelect} 
-                                    onChange={handleMotivoSelectChange} 
-                                    className="w-full rounded-xl bg-void/50 border border-jewel/30 text-stark focus:ring-fuschia focus:border-fuschia font-bold mb-2 transition-colors" 
-                                    required
-                                >
+                                <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 text-gray-500">Motivo de la Operación</label>
+                                <select value={motivoSelect} onChange={handleMotivoSelectChange} className="w-full rounded-lg bg-white border border-gray-200 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] text-sm font-medium px-4 py-2.5 mb-2" required>
                                     {opcionesMotivo[stockData.tipo].map((opcion, idx) => (
-                                        <option key={idx} value={opcion} className="bg-void">{opcion}</option>
+                                        <option key={idx} value={opcion}>{opcion}</option>
                                     ))}
-                                    <option value="Otro" className="font-black bg-void">📝 Otro motivo...</option>
+                                    <option value="Otro" className="font-bold text-gray-700">Otro motivo (Especificar)...</option>
                                 </select>
 
                                 {motivoSelect === 'Otro' && (
-                                    <input 
-                                        type="text" 
-                                        value={stockData.motivo} 
-                                        onChange={e => setStockData('motivo', e.target.value)} 
-                                        placeholder="Escribe el motivo..." 
-                                        className="w-full rounded-xl bg-void/50 border border-fuschia text-stark focus:ring-fuschia focus:border-fuschia transition-all shadow-inner" 
-                                        required 
-                                        autoFocus
-                                    />
+                                    <input type="text" value={stockData.motivo} onChange={e => setStockData('motivo', e.target.value)} placeholder="Escribe el motivo detallado..." className="w-full rounded-lg bg-white border border-gray-300 text-[#03363D] focus:ring-[#03363D] focus:border-[#03363D] text-sm px-4 py-2.5 shadow-inner" required autoFocus />
                                 )}
-                                
-                                {stockErrors.motivo && <p className="text-fuschia text-xs mt-1 font-bold">{stockErrors.motivo}</p>}
                             </div>
                             
-                            <button disabled={processingStock} className="w-full mt-6 py-4 bg-gradient-to-r from-jewel to-fuschia text-stark rounded-xl font-black text-sm uppercase tracking-widest shadow-[0_10px_20px_-10px_rgba(71,23,246,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(162,57,202,0.8)] hover:-translate-y-1 transition-all disabled:opacity-50">
-                                {processingStock ? 'Registrando...' : 'Confirmar'}
-                            </button>
+                            <div className="pt-2">
+                                <button disabled={processingStock} className="w-full py-3.5 bg-[#03363D] text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-md hover:bg-[#174D4D] transition-colors disabled:opacity-50">
+                                    {processingStock ? 'Procesando...' : 'Confirmar Movimiento'}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

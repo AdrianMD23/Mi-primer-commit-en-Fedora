@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import ThemeToggle from '@/Components/ThemeToggle';
+
 
 export default function Authenticated({ user, header, children }) {
     const userName = user?.name || 'Usuario';
@@ -14,8 +14,7 @@ export default function Authenticated({ user, header, children }) {
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     
                     <div className="flex items-center gap-4">
-    <ThemeToggle /> {/* Aquí aparecerá el botón */}
-    {/* ... resto de tu menú ... */}
+   
 </div>
                     {/* LOGO */}
                     <div className="flex items-center">

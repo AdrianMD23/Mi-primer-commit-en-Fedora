@@ -16,8 +16,7 @@ use App\Http\Controllers\CorteCajaController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriaController;
-
-use App\Http\Controllers\Admin\ProveedorController; // <-- El import correcto de proveedores
+use App\Http\Controllers\Admin\ProveedorController;
 
 Route::redirect('/', '/login');
 
@@ -42,13 +41,14 @@ Route::middleware(['auth', 'rol:Vendedor,Administrador'])->group(function () {
 });
 
 // ==========================================
-// 2. ACCESO PARA GERENTES Y ADMIN (Inventario y Cortes)
+// 2. ACCESO PARA GERENTES Y ADMIN (Inventario, Cortes, Proveedores y Categorías)
 // ==========================================
 Route::middleware(['auth', 'rol:Gerente,Administrador'])->group(function () {
     // Reportes
     Route::get('/gerencia/reportes', [ReporteController::class, 'index'])->name('gerencia.reportes');
     Route::get('/gerencia/reportes/pdf', [ReporteController::class, 'descargarPDF'])->name('gerencia.reportes.pdf');
     Route::get('/gerencia/reportes/ventas-hoy', [ReporteController::class, 'descargarVentasHoyPDF'])->name('gerencia.reportes.ventas-hoy');
+    
     // Control de Gastos
     Route::get('/gerencia/gastos', [GastoController::class, 'index'])->name('gerencia.gastos');
     Route::post('/gerencia/gastos', [GastoController::class, 'store'])->name('gerencia.gastos.store');
@@ -71,32 +71,34 @@ Route::middleware(['auth', 'rol:Gerente,Administrador'])->group(function () {
     // Gestión de Cortes
     Route::get('/gerencia/cortes', [CorteCajaController::class, 'index'])->name('gerencia.cortes');
     Route::post('/gerencia/cortes', [CorteCajaController::class, 'store'])->name('gerencia.cortes.store');
+
+    // --- MÓDULOS DELEGADOS AL GERENTE ---
+    // Módulo de Proveedores
+    Route::get('/admin/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
+    Route::post('/admin/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
+    Route::put('/admin/proveedores/{id}', [ProveedorController::class, 'update'])->name('proveedores.update');
+    Route::patch('/admin/proveedores/{id}/toggle', [ProveedorController::class, 'toggle'])->name('proveedores.toggle');
+
+    // Módulo de Categorías
+    Route::patch('admin/categorias/{categoria}/toggle', [CategoriaController::class, 'toggle'])->name('categorias.toggle');
+    Route::resource('admin/categorias', CategoriaController::class);
 });
 
 // ==========================================
-// 3. ACCESO EXCLUSIVO DE ADMIN
+// 3. ACCESO EXCLUSIVO DE ADMIN (Gestión de TI)
 // ==========================================
-Route::get('/respaldo/descargar', [BackupController::class, 'download']);
 Route::middleware(['auth', 'rol:Administrador'])->group(function () {
     // Gestión de Usuarios
     Route::get('/admin/usuarios', [UserController::class, 'index'])->name('admin.usuarios');
     Route::post('/admin/usuarios', [UserController::class, 'store'])->name('admin.usuarios.store');
     Route::put('/admin/usuarios/{id}', [UserController::class, 'update'])->name('admin.usuarios.update');
+    
+    // Configuración Global
     Route::get('/configuracion', [ConfiguracionController::class, 'index'])->name('admin.configuracion.index');
     Route::post('/configuracion', [ConfiguracionController::class, 'update'])->name('admin.configuracion.update');
+    
+    // Respaldos de Sistema
     Route::get('/respaldo/descargar', [BackupController::class, 'download'])->name('admin.respaldo.download');
-    Route::get('/respaldo/descargar', [BackupController::class, 'download']);
-    // Módulo de Proveedores
-    Route::get('/admin/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
-    Route::post('/admin/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
-    Route::put('/admin/proveedores/{id}', [ProveedorController::class, 'update'])->name('proveedores.update');
-   Route::patch('/admin/proveedores/{id}/toggle', [ProveedorController::class, 'toggle'])->name('proveedores.toggle');
-
-    // Módulo de Categorías
-    Route::resource('admin/categorias', CategoriaController::class);
-    // Módulo de Categorías
-    Route::patch('admin/categorias/{categoria}/toggle', [CategoriaController::class, 'toggle'])->name('categorias.toggle');
-    Route::resource('admin/categorias', CategoriaController::class);
 });
 
 require __DIR__.'/auth.php';

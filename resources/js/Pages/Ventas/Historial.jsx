@@ -4,103 +4,75 @@ import { Head, Link } from '@inertiajs/react';
 
 export default function HistorialVentas({ auth, ventas }) {
     return (
-        <AuthenticatedLayout user={auth.user} header={<span>Mis Tickets</span>}>
+        <AuthenticatedLayout user={auth.user} header={<span className="font-bold tracking-tight text-gray-500 uppercase text-xs">Registro de Operaciones</span>}>
             <Head title="Historial de Ventas" />
 
-            <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                {/* --- ENCABEZADO ACTUALIZADO CON EL BOTÓN DE PDF --- */}
-<div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
-    <div>
-        <h2 className="text-4xl font-serif italic text-stark drop-shadow-md">Historial de Ventas</h2>
-        <p className="text-[10px] tracking-widest uppercase font-bold text-stark/50 mt-1">
-            Visualización estricta del turno en curso
-        </p>
-    </div>
-    
-    <div className="flex items-center gap-4 w-full sm:w-auto">
-        {/* BOTÓN NEÓN IMPRIMIR REPORTE PDF */}
-        <a 
-            href="/ventas/descargar-pdf" 
-            download
-            className="px-6 py-3 rounded-xl font-black text-xs transition-all duration-300 shadow-[0_10px_20px_-10px_rgba(162,57,202,0.6)] hover:shadow-[0_15px_25px_-5px_rgba(162,57,202,0.8)] uppercase tracking-wider bg-gradient-to-r from-jewel to-fuschia text-stark hover:-translate-y-0.5 text-center flex items-center gap-2"
-        >
-            <span>📊</span> Descargar PDF de Hoy
-        </a>
+                {/* CABECERA FORMAL */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 px-2">
+                    <div>
+                        <h2 className="text-3xl font-black tracking-tight text-[#03363D]">Historial de Ventas</h2>
+                        <p className="text-sm font-medium text-gray-500 mt-1">Bitácora de tickets emitidos durante el turno actual.</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <a href="/ventas/descargar-pdf" className="bg-[#03363D] text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-md hover:bg-[#174D4D] transition-all">
+                            Exportar PDF
+                        </a>
+                        <Link href="/dashboard" className="text-xs font-bold text-gray-400 hover:text-[#03363D] transition-colors uppercase tracking-widest">
+                            ← Volver
+                        </Link>
+                    </div>
+                </div>
 
-        <Link href="/dashboard" className="text-sm font-bold text-stark/60 hover:text-fuschia transition-colors uppercase tracking-widest whitespace-nowrap">
-            ← Volver
-        </Link>
-    </div>
-</div>
-
-                {/* TABLA DE HISTORIAL (Cristal Oscuro) */}
-                <div className="bg-white/5 backdrop-blur-md rounded-3xl shadow-[0_0_30px_rgba(71,23,246,0.1)] overflow-hidden border border-jewel/20">
+                {/* TABLA CORPORATIVA */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm text-left border-collapse">
-                            <thead className="bg-gradient-to-r from-void to-jewel/20 border-b border-jewel/30 text-stark/70">
-                                <tr>
-                                    <th className="px-6 py-4 font-black text-xs uppercase tracking-widest">Folio / Ticket</th>
-                                    <th className="px-6 py-4 font-black text-xs uppercase tracking-widest">Fecha y Hora</th>
-                                    {/* --- COLUMNA DE ARTÍCULOS --- */}
-                                    <th className="px-6 py-4 font-black text-xs uppercase tracking-widest">Artículos Vendidos</th>
-                                    <th className="px-6 py-4 font-black text-xs uppercase tracking-widest">Método de Pago</th>
-                                    <th className="px-6 py-4 font-black text-xs uppercase tracking-widest text-right">Total</th>
+                            <thead className="bg-gray-50/80 border-b border-gray-200">
+                                <tr className="text-[10px] uppercase font-black text-gray-500 tracking-widest">
+                                    <th className="px-8 py-4">Folio</th>
+                                    <th className="px-8 py-4">Fecha / Hora</th>
+                                    <th className="px-8 py-4">Artículos Vendidos</th>
+                                    <th className="px-8 py-4">Método</th>
+                                    <th className="px-8 py-4 text-right">Total</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-stark/5">
+                            <tbody className="divide-y divide-gray-100">
                                 {ventas.data.length === 0 ? (
                                     <tr>
-                                        <td colSpan="5" className="text-center py-12 italic text-stark/50 font-bold text-lg">
-                                            No has registrado ventas aún.
-                                        </td>
+                                        <td colSpan="5" className="text-center py-12 text-gray-400 font-medium italic">No se han registrado ventas aún.</td>
                                     </tr>
                                 ) : (
                                     ventas.data.map((venta) => (
-                                        <tr key={venta.id} className="hover:bg-fuschia/10 text-stark transition-colors">
+                                        <tr key={venta.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-8 py-5 font-bold text-gray-400 text-xs">#{String(venta.id).padStart(5, '0')}</td>
+                                            <td className="px-8 py-5 font-medium text-gray-600">{new Date(venta.created_at).toLocaleString('es-MX')}</td>
                                             
-                                            {/* FOLIO */}
-                                            <td className="px-6 py-4 font-black text-stark/40 text-lg">
-                                                # {String(venta.id).padStart(5, '0')}
-                                            </td>
-                                            
-                                            {/* FECHA */}
-                                            <td className="px-6 py-4 font-bold text-stark/80">
-                                                {new Date(venta.created_at).toLocaleString('es-MX')}
-                                            </td>
-                                            
-                                            {/* --- IMPRESIÓN DE LA LISTA DE ARTÍCULOS --- */}
-                                            <td className="px-6 py-4">
+                                            {/* ARTÍCULOS */}
+                                            <td className="px-8 py-5">
                                                 {venta.detalles && venta.detalles.length > 0 ? (
-                                                    <ul className="space-y-2">
+                                                    <ul className="space-y-1">
                                                         {venta.detalles.map((detalle, index) => (
-                                                            <li key={index} className="text-[11px] uppercase flex items-center gap-2">
-                                                                <span className="font-black text-fuschia bg-fuschia/10 border border-fuschia/30 px-2 py-0.5 rounded shadow-[0_0_5px_rgba(162,57,202,0.2)]">
-                                                                    [{detalle.producto?.clave || 'S/C'}]
-                                                                </span>
-                                                                <span className="font-bold drop-shadow-sm">
-                                                                    {detalle.producto?.nombre || 'Producto Borrado'}
-                                                                </span>
-                                                                <span className="font-black opacity-60">
-                                                                    (x{detalle.cantidad})
-                                                                </span>
+                                                            <li key={index} className="text-[11px] text-gray-600 flex items-center gap-2">
+                                                                <span className="font-bold text-gray-400">[{detalle.producto?.clave || 'S/C'}]</span>
+                                                                {detalle.producto?.nombre || 'Producto Borrado'}
+                                                                <span className="font-black text-gray-400">x{detalle.cantidad}</span>
                                                             </li>
                                                         ))}
                                                     </ul>
-                                                ) : (
-                                                    <span className="text-xs italic opacity-40">- Sin detalles -</span>
-                                                )}
+                                                ) : <span className="text-xs italic text-gray-300">- Sin detalles -</span>}
                                             </td>
 
-                                            {/* MÉTODO DE PAGO */}
-                                            <td className="px-6 py-4">
-                                                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-jewel/20 text-[#8B5CF6] border-jewel/50 shadow-[0_0_10px_rgba(71,23,246,0.2)]">
+                                            {/* MÉTODO */}
+                                            <td className="px-8 py-5">
+                                                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-md text-[10px] font-black uppercase tracking-widest">
                                                     {venta.metodo_pago}
                                                 </span>
                                             </td>
                                             
                                             {/* TOTAL */}
-                                            <td className="px-6 py-4 text-right font-black text-xl text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                                            <td className="px-8 py-5 text-right font-black text-[#03363D]">
                                                 ${Number(venta.total).toLocaleString('es-MX', {minimumFractionDigits: 2})}
                                             </td>
                                         </tr>
